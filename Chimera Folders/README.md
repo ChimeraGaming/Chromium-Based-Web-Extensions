@@ -1,40 +1,74 @@
-# Streamio Folder Addon
+# 🎬 Stremio Folder Addon — *Chimera Folders*
 
-Organize your Stremio Web experience with personal folders, a modern dark UI, and fast navigation.
+Organize your **Stremio Web** experience with personal folders, dark mode styling, smooth UI, and ultra-fast navigation.
+
+![Version](https://img.shields.io/badge/version-3.0.0-blueviolet) 
+![License](https://img.shields.io/badge/license-Personal--Use--Only-red) 
+![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-lightgrey)
 
 ---
 
 ## ✨ Features
-- Create and manage custom folders for shows/movies
-- Add shows easily with a modern popup picker
-- Click folders to open shows instantly
-- Smooth, collapsible sidebar
-- Dark Mode UI
-- Toast notifications when adding shows
-- Home button for quick navigation
-- Built for [web.stremio.com](https://web.stremio.com/)
+
+- 📁 Create, manage, and organize **custom folders** for your favorite shows and movies
+- ➕ Quickly **add shows** with a popup picker
+- 🧹 **No duplicate** shows inside folders
+- 🧭 **Instant navigation** to show/movie pages
+- 🌑 **Modern Dark Mode UI** themed to match Stremio
+- 🍞 **Toast notifications** on successful adds
+- 🏠 **Home Button** for fast return to the main page
+- 📂 **Collapsible sidebar** for clean browsing
+- 📌 **Pin/Unpin Sidebar** with hover functionality
+- 🐙 **GitHub Link** built into the UI
+- 🚀 **Fast, lightweight, no dependencies**
+
+> Fully optimized for [web.stremio.com](https://web.stremio.com/)
 
 ---
 
-## 📦 Installation
+## 📦 Installation Guide
 
-1. Download the latest release `.zip` from [Releases](https://github.com/ChimeraGaming/Stremio-Addons/releases).
-2. Extract it to a folder.
-3. In Chrome, go to `chrome://extensions/`
-4. Enable **Developer Mode**.
+1. Download the latest `.zip` from the [Releases](https://github.com/ChimeraGaming/Stremio-Addons/releases).
+2. Extract the folder.
+3. Open Chrome and navigate to: `chrome://extensions/`
+4. Enable **Developer Mode** (top right).
 5. Click **Load Unpacked** and select the extracted folder.
-
-## May Update in the Future...
-
----
-
-## 📜 Credits
-
-Built with 💻 by **Chimera Gaming**  
-Special thanks to the community for inspiration.
+6. Done! Enjoy organized streaming.
 
 ---
 
-## 📃 License
+## 🛠️ Current Status
 
-This project is released as-is for personal use.
+> **Version 3.0.0**  
+Latest release includes:
+- GitHub repo link in sidebar
+- Visual polish to Stremio color scheme
+- Improved minimize sidebar behavior
+- Bug fixes and performance enhancements
+
+---
+
+## 🧩 Future Plans
+
+- None
+
+---
+
+## 📜 License
+
+> **Personal Use Only**  
+You may use, share, and enjoy privately.  
+Commercial use, repackaging, or modification without permission is prohibited unless otherwise stated below.
+
+---
+## 🤝 Collaboration Offer
+
+**Chimera Gaming** offers free collaboration or integration to the **official Stremio Team** upon request.  
+> Contact: [GitHub Profile](https://github.com/ChimeraGaming)
+
+---
+
+## 👨‍💻 Credits
+
+Built with 💻 by [Chimera Gaming](https://github.com/ChimeraGaming)  
+Special thanks to the Stremio community for continued inspiration. ✨
