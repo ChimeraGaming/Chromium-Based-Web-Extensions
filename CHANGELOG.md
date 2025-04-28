@@ -100,6 +100,15 @@ All notable changes to this project are documented here.
   - Smooth transition animations
 - Minor CSS tweaks for consistency
 
+## 2.10.0 - Full Dark Mode UI, Auto-Hiding Sidebar, Collapsible Folders
+- Complete dark mode rework to match Stremio visual theme
+- Home and Add buttons redesigned with purple gradient styling
+- Sidebar can now minimize fully and reveal itself on hover
+- Folder groups can now collapse and expand individually with animated chevrons
+- Added confirmation prompts before deleting folders or shows
+- Optimized sidebar transitions for smooth animations
+- Cleaned and organized code structure for Chrome Extension packaging
+
 
 ---
 
