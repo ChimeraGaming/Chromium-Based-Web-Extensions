@@ -84,6 +84,14 @@ All notable changes to this project are documented here.
 - Separated private source code from public distribution
 - Prepared project for GitHub releases (structure and security best practices)
 
+  ### 2.9.0 — Show Removal & Confirmations Update
+- White minus ➖ button added next to each show
+- Clicking minus asks confirmation before removing
+- Red X on folders now asks confirmation before deletion
+- Updated toast notifications
+- Added LICENSE file (Personal Use + Stremio Collab offer)
+- Small UI alignment and margin improvements
+
 ---
 
 # 📌 Notes
