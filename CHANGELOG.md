@@ -92,6 +92,15 @@ All notable changes to this project are documented here.
 - Minor spacing and UI alignment fixes to folder and show lists
 - LICENSE file added (Personal Use Only + Stremio Collaboration offer)
 
+## 2.9.1 — Sidebar Button Polish & Minimize Fix
+- Re-added missing sidebar minimize/collapse button (top-right)
+- Aligned Home ➕ Add ➕ Minimize buttons into one clean row
+- Added hover effects to all top buttons (Home, Add, Minimize) for modern polish
+  - Light background brighten effect on hover
+  - Smooth transition animations
+- Minor CSS tweaks for consistency
+
+
 ---
 
 # 📌 Notes
