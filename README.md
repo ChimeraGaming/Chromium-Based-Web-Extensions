@@ -21,7 +21,7 @@ This repository hosts a collection of custom **addons** developed to enhance the
 
 ## 🚀 Current Addons
 
-- **Chimera Folders** (v2.10.0)  
+- **Chimera Folders** (v3)  
   Easily organize your Stremio library into custom folders!  
   *(See the `Chimera Folders` folder for full details.)*
 
