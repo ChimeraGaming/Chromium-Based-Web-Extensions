@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Streamio Folder Addon",
-  "description": "Adds customizable folders and a dark mode sidebar to Stremio Web. Includes auto-hiding, folder collapsing, and smooth animations.",
+  "name": "Stremio Addon - Chimera Folders",
+  "description": "Enhances Stremio Web with customizable folders, dark mode sidebar, fast show management, auto-hide, collapsible sections, and direct navigation. Built for a cleaner and faster streaming experience.",
   "version": "3.0.0",
   "icons": {
     "128": "icon.png"
