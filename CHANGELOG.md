@@ -109,6 +109,11 @@ All notable changes to this project are documented here.
 - Optimized sidebar transitions for smooth animations
 - Cleaned and organized code structure for Chrome Extension packaging
 
+# 🚀 3.0.0 | [Release Candidate 1]
+- **NEW:** GitHub icon button added to top-right
+- **NEW:** GitHub button links directly to the public repository
+- Matched the GitHub button color styling to the Stremio purple/blue gradient
+- Minor tweaks to button alignment and hover glow for GitHub button
 
 ---
 
