@@ -51,21 +51,14 @@ Latest release includes:
 
 ## 🧩 Future Plans
 
-- None
+- Making Cloud Based Folders for Exisitng Extension Code
+- Or an actual Addon Code with Cloud Based Folders (I need help with this - I've reached out to the discord for support)
 
 ---
 
 ## 📜 License
 
-> **Personal Use Only**  
-You may use, share, and enjoy privately.  
-Commercial use, repackaging, or modification without permission is prohibited unless otherwise stated below.
-
----
-## 🤝 Collaboration Offer
-
-**Chimera Gaming** offers free collaboration or integration to the **official Stremio Team** upon request.  
-> Contact: [GitHub Profile](https://github.com/ChimeraGaming)
+This project is licensed under the [MIT License](LICENSE) © 2025 Chimera Gaming.
 
 ---
 
