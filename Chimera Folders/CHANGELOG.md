@@ -115,13 +115,18 @@ All notable changes to this project are documented here.
 - Matched the GitHub button color styling to the Stremio purple/blue gradient
 - Minor tweaks to button alignment and hover glow for GitHub button
 
-### 3.0.1 — Open Source Release
+## 3.0.1 — Open Source Release
 - Replaced `addon.min.js` with full, readable `addon.js` for public visibility and collaboration  
 - Converted license to **MIT License** for open-source usage and proper credit attribution  
 - Added complete `README.md` with Chrome Extension install instructions and GitHub repo link  
 - Updated `manifest.json` to reflect `addon.js` usage (non-minified)  
 - Cleaned and organized project structure for transparent development and GitHub releases
 
+## 🛠 3.1.0 — Create Folder Fix
+- **FIXED:** Connected missing `Create Folder` button event so folders can now be created properly
+- **UPDATED:** Inserted `create-folder` onclick handler cleanly before first `renderFolders()` call
+- **IMPROVED:** Sidebar UI now fully functional with add, remove, and create folder features working
+- **STYLE:** Minor internal code formatting cleanup for better readability
 
 ---
 
