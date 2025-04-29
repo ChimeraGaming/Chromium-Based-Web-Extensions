@@ -109,11 +109,19 @@ All notable changes to this project are documented here.
 - Optimized sidebar transitions for smooth animations
 - Cleaned and organized code structure for Chrome Extension packaging
 
-# 🚀 3.0.0 | [Release Candidate 1]
+## 🚀 3.0.0 - [Release Candidate 1]
 - **NEW:** GitHub icon button added to top-right
 - **NEW:** GitHub button links directly to the public repository
 - Matched the GitHub button color styling to the Stremio purple/blue gradient
 - Minor tweaks to button alignment and hover glow for GitHub button
+
+### 3.0.1 — Open Source Release
+- Replaced `addon.min.js` with full, readable `addon.js` for public visibility and collaboration  
+- Converted license to **MIT License** for open-source usage and proper credit attribution  
+- Added complete `README.md` with Chrome Extension install instructions and GitHub repo link  
+- Updated `manifest.json` to reflect `addon.js` usage (non-minified)  
+- Cleaned and organized project structure for transparent development and GitHub releases
+
 
 ---
 
