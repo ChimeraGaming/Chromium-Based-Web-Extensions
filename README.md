@@ -36,9 +36,6 @@ This project is now fully **open source** under the MIT License and welcomes con
 
 > Contact: [Chimera Gaming GitHub Profile](https://github.com/ChimeraGaming)
 
-
-> Contact: [Chimera Gaming GitHub Profile](https://github.com/ChimeraGaming)
-
 ---
 
 ## 📄 License
