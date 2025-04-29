@@ -39,11 +39,5 @@ The codebase is offered **for free** to the official Stremio Team if they wish t
 
 ## 📄 License
 
-All addons in this repository are licensed for **Personal Use Only**.  
-Redistribution, modification, or commercial use is prohibited without explicit permission.
+This project is licensed under the [MIT License](LICENSE) © 2025 Chimera Gaming.
 
-> See the LICENSE file for full details.
-
----
-
-© 2025 Chimera Gaming. All Rights Reserved.
