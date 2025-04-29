@@ -6,7 +6,7 @@ Organize your **Stremio Web** experience with personal folders, dark mode stylin
 
 ![Version](https://img.shields.io/badge/version-3.0.1-blueviolet) 
 ![License: MIT](https://img.shields.io/badge/license-MIT-green) 
-![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-lightgrey)
+![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-red)
 
 ---
 
