@@ -1,10 +1,11 @@
 ![Image](https://github.com/user-attachments/assets/5ef03321-0207-45a4-901a-baa9860ca938)
 
-# 🎬 Stremio Folder Extension (Will update to Addon When I learn how...) — *Chimera Folders*
+# 🎬 Stremio Folder Extension — *Chimera Folders*
+> Will update to Addon when I learn how to.
 
 Organize your **Stremio Web** experience with personal folders, dark mode styling, smooth UI, and ultra-fast navigation.
 
-![Version](https://img.shields.io/badge/version-3.0.1-blueviolet) 
+![Version](https://img.shields.io/badge/version-3.1.0-blueviolet) 
 ![License: MIT](https://img.shields.io/badge/license-MIT-green) 
 ![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-red)
 
@@ -81,12 +82,13 @@ Organize your **Stremio Web** experience with personal folders, dark mode stylin
 
 ## 🛠️ Current Status
 
-> **Version 3.0.1**  
+> **Version 3.1.0**  
 Latest release includes:
 - Switched from minified to full `addon.js` source for transparency  
 - MIT License added for open-source collaboration  
 - New README with install instructions and project details  
-- Updated manifest and project structure for public GitHub release
+- Updated manifest and project structure for public GitHub release  
+- Connected missing Create Folder button (sidebar fully functional)
 
 ---
 
@@ -107,4 +109,4 @@ This project is licensed under the [MIT License](LICENSE) © 2025 Chimera Gaming
 ## 👨‍💻 Credits
 
 Built with 💻 by [Chimera Gaming](https://github.com/ChimeraGaming)  
-Special thanks to the Stremio community for continued inspiration ✨
+Special thanks to the Stremio community for continued inspiration. ✨
