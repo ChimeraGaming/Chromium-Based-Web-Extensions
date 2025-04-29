@@ -30,12 +30,12 @@ Organize your **Stremio Web** experience with personal folders, dark mode stylin
 
 ## 📦 Installation Guide
 
-![Chrome](https://img.shields.io/badge/Chrome-Verified-blue)
-![Brave](https://img.shields.io/badge/Brave-Verified-orange)
-![Firefox](https://img.shields.io/badge/Firefox-Verified-lightgrey)
-![Edge](https://img.shields.io/badge/Edge-Verified-blueviolet)
-![Opera](https://img.shields.io/badge/Opera-Verified-red)
-![Vivaldi](https://img.shields.io/badge/Vivaldi-Verified-darkred)
+![Chrome](https://img.shields.io/badge/Chrome-Verified-brightgreen)
+![Brave](https://img.shields.io/badge/Brave-Verified-brightgreen)
+![Firefox](https://img.shields.io/badge/Firefox-Verified-brightgreen)
+![Edge](https://img.shields.io/badge/Edge-Verified-brightgreen)
+![Opera](https://img.shields.io/badge/Opera-Verified-brightgreen)
+![Vivaldi](https://img.shields.io/badge/Vivaldi-Verified-brightgreen)
 
 > ✅ Fully tested and verified to work on:  
 **Chrome, Brave, Firefox, Microsoft Edge, Opera, and Vivaldi**
