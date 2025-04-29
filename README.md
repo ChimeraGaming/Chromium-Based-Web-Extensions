@@ -32,8 +32,10 @@ More addons are planned and will be released over time. Stay tuned!
 
 ## 🤝 Collaboration & Contributions
 
-- This addon is now fully **open source** and welcomes community contributions.
-- The codebase is also offered **free to the official Stremio Team** for potential integration or collaboration.
+This project is now fully **open source** under the MIT License and welcomes contributions, forks, and integrations — including from the official Stremio team.
+
+> Contact: [Chimera Gaming GitHub Profile](https://github.com/ChimeraGaming)
+
 
 > Contact: [Chimera Gaming GitHub Profile](https://github.com/ChimeraGaming)
 
