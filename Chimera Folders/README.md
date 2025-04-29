@@ -37,7 +37,7 @@ Organize your **Stremio Web** experience with personal folders, dark mode stylin
 4. Enable **Developer mode** (top right).
 5. Click **Load unpacked** and select the extracted folder.
 
-### 🔹 For Brave Browser
+### 🛡 For Brave Browser
 1. Follow the **same steps as Chrome**: Brave shares the same extension system.
 2. Navigate to `brave://extensions/` instead of Chrome.
 
