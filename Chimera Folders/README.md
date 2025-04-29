@@ -40,12 +40,12 @@ Organize your **Stremio Web** experience with personal folders, dark mode stylin
 
 ## 🛠️ Current Status
 
-> **Version 3.0.0**  
+> **Version 3.0.1**  
 Latest release includes:
-- GitHub repo link in sidebar
-- Visual polish to Stremio color scheme
-- Improved minimize sidebar behavior
-- Bug fixes and performance enhancements
+- Switched from minified to full `addon.js` source for transparency
+- MIT License added for open-source collaboration
+- New README with install instructions and project details
+- Updated manifest and project structure for public GitHub release
 
 ---
 
