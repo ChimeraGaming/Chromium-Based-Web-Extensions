@@ -1,6 +1,6 @@
 ![Image](https://github.com/user-attachments/assets/5ef03321-0207-45a4-901a-baa9860ca938)
 
-# 🎬 Stremio Folder Addon — *Chimera Folders*
+# 🎬 Stremio Folder Extension (Will update to Addon When I learn how...) — *Chimera Folders*
 
 Organize your **Stremio Web** experience with personal folders, dark mode styling, smooth UI, and ultra-fast navigation.
 
