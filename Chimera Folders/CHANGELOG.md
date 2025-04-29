@@ -131,9 +131,10 @@ All notable changes to this project are documented here.
 ---
 
 # 📌 Notes
-- Version 1.x.x represents the Light Mode development.
-- Version 2.x.x and beyond introduce Dark Mode and major UX improvements.
-- From v2.8.0 onward, releases are Chrome-extension ready with minified code.
+- Version 1.x.x represents early Light Mode development.
+- Version 2.x.x introduced Dark Mode and major UI/UX improvements.
+- Version 3.x.x and beyond focus on open-source release, public GitHub collaboration, and cleaner extension development.
+- -
 
 ---
 
