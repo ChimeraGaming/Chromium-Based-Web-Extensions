@@ -1,3 +1,4 @@
+[![Stremio: Chimera Folders](https://img.shields.io/badge/Stremio-Chimera%20Folders-5E3A87?style=for-the-badge&logo=stremio&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Stremio%20Addons%20and%20Extensions/Chimera%20Folders)
 # 🌐 Chimera Web Extensions
 
 Welcome to **Chimera Web Extensions** — a collection of browser tools, media platform enhancements, and utility add-ons maintained by [ChimeraGaming](https://github.com/ChimeraGaming).  
