@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Stremio Addon - Chimera Folders",
+  "version": "3.0.0",
+  "description": "Enhances Stremio Web with customizable folders, a dark sidebar UI, fast show management, auto-hide, collapsible sections, and GitHub integration.",
+  "icons": {
+    "128": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.stremio.com/*"],
+      "js": ["addon.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [],
+  "host_permissions": [
+    "https://web.stremio.com/*"
+  ]
+}
