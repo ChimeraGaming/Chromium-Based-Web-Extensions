@@ -4,84 +4,97 @@ All notable changes to the GitHub Repo Navigator extension.
 
 ---
 
-## [1.0.6]
+## [2.0.1]
 ### Added
-- Switched to **GitHub REST API** for full recursive repo parsing.
-- Support for **true nested folder rendering** (infinite depth).
-- Files and folders are now:
-  - **Sorted alphanumerically**
-  - **Folders always appear above files**
-- Folder names now display only their **own name**, not the full path.
-- Visual cleanup for deeply nested UIs.
-- Support for `.github` and other hidden folders when they contain valid files.
-
-### Fixed
-- Correctly loads and parses nested paths like `Folder/Subfolder/File.md`.
-- No longer mislabels folders with full paths like `parent/child`.
-- Resolved display issues for `.md` files in root folders appearing out of order.
+- Section headers for every logical block of code for maintainability.
+- Theme settings now affect folder hover states and link colors dynamically.
+- Drag-and-resize events persist position and size in real-time.
+- Tooltip hover styling added to links and folders for better UX.
+- Modularized logic structure into: theme config, UI, events, scraping, rendering, search.
 
 ### Changed
-- `renderTree()` logic rebuilt to prioritize clean nesting and sort order.
-- UI folder groups renamed to reflect only their **final segment** (e.g. `Chimera Folders`, not `Stremio Addons and Extensions/Chimera Folders`).
-- Code cleanup and function separation for easier long-term updates.
+- Refactored `renderTree`, `makeFolderGroup`, and `applyTheme` for clarity and maintainability.
+- Moved DOM references to a centralized block.
+- Updated folder group generation with improved animations and accessibility.
+
+---
+
+## [2.0.0]
+### Added
+- Full working release using GitHub REST API.
+- True nested folder rendering (infinite depth).
+- Alphanumeric sorting with folders always above files.
+- Folder names now display only their final segment.
+- Search bar with live filtering.
+- Start button to trigger scraping.
+- Modern panel UI with blur and shadows.
+- Theme support: Dark, Light, and Solarized.
+- Draggable and resizable UI panel.
+- Panel size and position now saved in `localStorage`.
+- Close (`✖`) button re-added for convenience.
+
+---
+
+## [1.0.6]
+### Added
+- Switched to GitHub REST API for full recursive repo parsing.
+- Support for deeply nested folders.
+- Folders sorted above files, all in alphanumeric order.
+- Folder names cleaned to only show the last segment.
+- Supports hidden folders like `.github` if they contain valid files.
+
+### Fixed
+- Correctly parses nested paths like `Folder/Subfolder/File.md`.
+- Resolved display issues with `.md` files and misplaced README/LICENSE files.
+
+### Changed
+- Rebuilt renderTree() logic.
+- Simplified folder display names.
+- Cleaned up logic for sorting and UI generation.
 
 ---
 
 ## [1.0.5]
 ### Fixed
-- Fully resolved folder/file parsing to show nested structures correctly.
-- Properly identifies and groups:
-  - Top-level folders (e.g. `Models`, `Troubleshooting`)
-  - Nested folders and files (e.g. `Models/[2001] EZ-Flash Advance.md`)
-- Correctly decodes and displays human-readable folder names from URLs.
-- Fixed LICENSE and README appearing in wrong locations or folders.
-- Improved root folder label to reflect actual GitHub repository name.
-- Addressed issue where nothing was shown if hidden folders were present.
-- Ensured folders are shown as folders, not files.
+- Folder/file parsing now shows nested structures correctly.
+- Identifies and groups top-level and nested content.
+- Fixed incorrect folder names and display of LICENSE/README.
+- Improved root folder naming.
+- Handles hidden folders.
 
 ### Changed
-- Root folder now dynamically reflects the repo name.
-- File links open in the same tab for a smoother experience.
-- Folder expand/collapse logic cleaned up for deeply nested files.
+- File links open in same tab.
+- Folder collapse logic improved.
 
 ---
 
 ## [1.0.4]
 ### Fixed
-- Removed duplicate file and folder entries.
-- Filtered out:
-  - Dotfiles and folders (e.g. `.github`)
-  - Entries labeled `(folder)`
-  - Empty or invalid entries
+- Removed duplicate entries.
+- Filtered dotfiles, hidden folders, and invalid entries.
 
 ---
 
 ## [1.0.3]
 ### Changed
-- Replaced loading spinner with terminal-style animated logging.
-- Enhanced the step-by-step progress feedback during scraping.
+- Replaced spinner with animated status text.
+- Improved scrape progress visibility.
 
 ---
 
 ## [1.0.2]
 ### Added
-- Modernized floating UI with:
-  - Search bar
-  - Collapsible folders
-  - Icons
-- Search functionality with live filtering.
+- Floating UI with collapsible folders and search bar.
 
 ---
 
 ## [1.0.1]
 ### Added
-- Grouped links by folder based on GitHub repo structure.
-- Collapsible group UI for better organization.
+- Grouped GitHub links by folder structure.
 
 ---
 
 ## [1.0.0]
 ### Initial
-- Scraped all visible `/blob/` and `/tree/` GitHub links.
-- Displayed raw list in popup panel.
-- Added basic floating UI with close and refresh buttons.
+- Scraped visible `/blob/` and `/tree/` GitHub links.
+- Basic floating UI with close and refresh buttons.
