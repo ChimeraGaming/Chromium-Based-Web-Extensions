@@ -4,6 +4,20 @@ All notable changes to the GitHub Repo Navigator extension.
 
 ---
 
+## [2.1.0]
+### Added
+- Manual panel resizing with persisted width/height via `ResizeObserver`.
+- Auto-reset fallback for corrupted or too-small width/height values (< 50px).
+- Floating UI correctly reappears at last saved position and size.
+- Theming system continues to apply properly to folders, text, and background.
+
+### Fixed
+- Dragging and resizing logic moved fully inside the IIFE scope to prevent variable issues.
+- Removed broken size dropdown and restored full manual size control.
+- Folder collapse animation and hover styles cleaned up for consistency.
+
+---
+
 ## [2.0.1]
 ### Added
 - Section headers for every logical block of code for maintainability.
