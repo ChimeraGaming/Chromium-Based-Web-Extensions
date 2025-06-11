@@ -4,6 +4,26 @@ All notable changes to the GitHub Repo Navigator extension.
 
 ---
 
+## [2.2.0]
+### Added
+- Inline code comments added across all sections to improve readability and modding ease.
+- Animated `pulse-glow` effect on the Start button for visual feedback.
+- The Start button now uses a single magnifying glass icon instead of text.
+- Start button glow color matches selected theme dynamically.
+- LiquiGlass theme enhancements: sharper text, smoother backdrop blur, and improved contrast for accessibility.
+
+### Changed
+- Button size increased and centered for visual prominence.
+- Theming logic updated to dynamically control both color and glow for buttons.
+- UI structure now better handles themes with transparency or high contrast.
+
+### Fixed
+- Button display issues under light and LiquiGlass themes.
+- Folder hover inconsistencies resolved in edge themes.
+- Resolved minor sizing bugs from dynamic content injection.
+
+---
+
 ## [2.1.0]
 ### Added
 - Manual panel resizing with persisted width/height via `ResizeObserver`.
