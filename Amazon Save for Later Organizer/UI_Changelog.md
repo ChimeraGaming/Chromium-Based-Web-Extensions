@@ -9,6 +9,11 @@
 ## June 19th
 ![image](https://github.com/user-attachments/assets/72f48174-b803-4986-b940-0f1284440ede)
 ![image](https://github.com/user-attachments/assets/d305202a-79a6-4b6c-a14f-8e3ef98d959d)
+![image](https://github.com/user-attachments/assets/a111d25a-9720-429f-8208-2fe22b83e9c9)
+
+![image](https://github.com/user-attachments/assets/158825f8-2ac7-461e-91e5-258f5f6612d3)
+![image](https://github.com/user-attachments/assets/8ea3fdd0-dbfa-4e36-8333-a78074edd8c1)
+
 
 
 ---
