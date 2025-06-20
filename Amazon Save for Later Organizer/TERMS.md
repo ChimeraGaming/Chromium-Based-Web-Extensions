@@ -1,24 +1,25 @@
 # Terms of Use
 
-Thank you for using **Amazon Save For Later Organizer**.
+By using the **Amazon Save For Later Organizer**, you agree to the following terms:
 
-By using this extension, you agree to the following:
+## ⚠️ Disclaimer
+This extension is provided “as-is” with no warranties. Functionality may be affected by:
+- Changes to Amazon's site structure
+- Browser limitations or performance issues
 
-## 1. No Warranty
-This extension is provided "as-is" without any warranties. While we do our best to maintain compatibility, we are not responsible for:
-- Amazon site layout changes that break functionality
-- Unexpected behavior due to browser limitations or performance issues
+## 👤 User Responsibility
+You agree to use this extension responsibly and legally. You may not: 
+- Use the extension for commercial or automated scraping beyond personal use
+- Resell, modify, or repackage the extension **without prior written permission**
+  
 
-## 2. User Responsibility
-You are responsible for using this tool appropriately. Please do not:
-- Run automated scans beyond reasonable limits
-- Modify or redistribute the extension in a way that violates browser policies
+## 🛠️ Edits & Modifications
+You may edit or fork this extension **only** after contacting the original developer for approval in GitHub Issues.
 
-## 3. Acceptable Use
-This tool is intended for personal, non-commercial use. You may not resell or repackage it without permission.
+This ensures proper credit, security, and version integrity across copies.
 
-## 4. Updates
-We reserve the right to update or discontinue this extension at any time.
+## 🔄 Updates & Changes
+We may update these terms and the extension features at any time.
 
-## 5. Contact
-For concerns or licensing inquiries, make a Github Issue.
+## 📬 Contact
+Reach out for questions or licensing permission: Github Issues
