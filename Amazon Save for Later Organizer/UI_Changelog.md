@@ -16,6 +16,11 @@
 
 ---
 
+### -v2.0.1] - Cleanup
+- Code cleanup completed and merged across manifest, style.css, and content.js.
+
+---
+
 ### [v2.0.0] – Final UI Polish for Sidebar v2
 - Scan status now displays: `Populated X Lost Items`.
 - This message appears *after* all final tabs are opened and data is sent.
