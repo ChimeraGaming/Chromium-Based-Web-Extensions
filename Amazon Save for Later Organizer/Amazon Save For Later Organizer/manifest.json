@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Amazon Save for Later Organizer",
+  "version": "2.1",
+  "description": "Organize and recover lost 'Save for Later' Amazon items with a sidebar UI.",
+  "permissions": ["scripting", "storage"],
+  "host_permissions": ["https://www.amazon.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.amazon.com/*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

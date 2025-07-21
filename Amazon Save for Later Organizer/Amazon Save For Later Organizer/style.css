@@ -1,0 +1,199 @@
+:root {
+  --bg-dark: #1e2233;
+  --card-bg: #2a2d40;
+  --highlight: #5cc8ff;
+  --gradient: linear-gradient(135deg, #8f5aff, #5cc8ff);
+  --text-light: #f1f5f9;
+  --text-dim: #a5b4cb;
+}
+
+/* 🌈 Sidebar */
+#save-sort-sidebar {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  width: 260px;
+  height: 52vh;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  padding: 14px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+#save-sort-sidebar h2 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 🔘 Button */
+#scan-control {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 12px rgba(140, 100, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#scan-control:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 16px rgba(140, 100, 255, 0.9);
+}
+
+#scan-control:disabled {
+  background: #334155;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 📊 Status & Progress */
+#scan-status {
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+}
+
+#progress-bar-container {
+  width: 100%;
+  height: 10px;
+  background: #111827;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6), 0 0 6px rgba(140, 100, 255, 0.2);
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8f5aff, #5cc8ff);
+  animation: pulsebar 2s infinite ease-in-out;
+  box-shadow: 0 0 6px #5cc8ff, 0 0 12px #8f5aff;
+  transition: width 0.4s ease-in-out;
+}
+
+@keyframes pulsebar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 🔍 Search */
+#sidebar-search {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #151a29;
+  border: 1px solid #334155;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 0 5px #1e293b;
+}
+
+#sidebar-search:focus {
+  border-color: var(--highlight);
+  box-shadow: 0 0 8px var(--highlight);
+}
+
+/* 📚 Items */
+#category-list {
+  flex: 1 1 auto;
+  margin-top: 10px;
+  height: calc(100% - 180px);
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #5cc8ff #1e2233;
+}
+
+#category-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#category-list::-webkit-scrollbar-track {
+  background: #1e2233;
+  border-radius: 10px;
+}
+
+#category-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8f5aff, #5cc8ff);
+  border-radius: 10px;
+  box-shadow: inset 0 0 2px #000;
+}
+
+#category-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a88cff, #6adfff);
+}
+
+.item-line {
+  padding: 12px 14px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35), inset 0 0 3px rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.item-line:hover {
+  background: #3a4560;
+  box-shadow: 0 0 6px var(--highlight), 0 0 3px #000 inset;
+}
+
+.item-line::before {
+  content: "🛒";
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+.item-line a {
+  color: #93c5fd;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+/* 🔘 Floating Button */
+#sidebar-toggle-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 10000;
+  background: var(--gradient);
+  color: white;
+  padding: 12px 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(140, 100, 255, 0.8);
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#sidebar-toggle-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(140, 100, 255, 1);
+}
