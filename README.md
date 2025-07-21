@@ -1,4 +1,5 @@
 [![Stremio: Chimera Folders](https://img.shields.io/badge/Stremio-Chimera%20Folders-5E3A87?style=for-the-badge&logo=stremio&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Stremio%20Addons%20and%20Extensions/Chimera%20Folders)
+[![Amazon: Save for Later Organizer](https://img.shields.io/badge/Amazon-Save%20for%20Later%20Organizer-FF9900?style=for-the-badge&logo=amazon&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Amazon%20Save%20for%20Later%20Organizer)
 
 # Chimera Web Extensions
 
@@ -37,6 +38,10 @@ Custom Stremio extensions designed to enhance the media browsing experience with
 
 Included:
 - Chimera Folders
+
+### [`Amazon Save for Later Organizer`](./Amazon%20Save%20for%20Later%20Organizer)
+
+A modern sidebar tool for organizing Amazon's "Save for Later" section. Features categorized folders, link previews, and sleek UI.
 
 ---
 
@@ -83,3 +88,7 @@ You can suggest:
 This repository is licensed under the [MIT License](./LICENSE).  
 Most extensions are open source unless otherwise noted in their respective folders.
 
+---
+
+Maintained by [ChimeraGaming](https://github.com/ChimeraGaming)  
+Flashcarts | Redstone | Web Tools
