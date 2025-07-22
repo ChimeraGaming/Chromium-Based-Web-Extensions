@@ -1,43 +1,43 @@
-# Stremio-Addons
+# Stremio Addons and Extensions
 
-Welcome to the **Stremio-Addons** repository by Chimera Gaming.
+Welcome to the **Stremio Addons and Extensions** repository by Chimera Gaming.
 
-This repository hosts a collection of custom **addons** developed to enhance the experience of using [Stremio](https://www.stremio.com/). Each addon is designed to bring new functionality, improve organization, and offer a more seamless media experience.
+This repository currently hosts **Chimera Folders**, a custom extension developed to enhance your [Stremio](https://www.stremio.com/) experience. It introduces advanced organization tools to streamline your media library.
 
 ---
 
 ## Structure
 
 - **Main Repository**  
-  A home for multiple standalone addons, each organized in its own folder.
+  This is the home of all current and future Stremio-related extensions developed by Chimera Gaming.
 
-- **Individual Addons**  
-  Every addon (e.g., *Chimera Folders*) has its own subfolder containing:
-  - Full, human-readable source code (`addon.js`)
+- **Chimera Folders Extension**  
+  Located in its own subfolder with:
+  - Readable source code (`addon.js`)
   - `manifest.json` for Chrome Extension support
-  - Icons and assets (if applicable)
-  - Individual `README.md` with feature list and installation instructions
+  - Icons and UI assets (if applicable)
+  - Dedicated `README.md` with feature list, screenshots, and installation instructions
 
 ---
 
-## Current Addons
+## Current Extension
 
 - **Chimera Folders** (v3.0.1)  
-  Organize your Stremio library into custom folders with a sleek sidebar UI, collapsible sections, and GitHub integration.  
-  *(See the `Chimera Folders` folder for full details.)*
+  Organize your Stremio library into custom folders with an intuitive UI, collapsible sidebar sections, and GitHub integration.  
+  *(See the `Chimera Folders` folder for full implementation details.)*
 
-More addons are planned and will be released over time.
+More extensions are in development and will be added to this repository when ready.
 
 ---
 
 ## Collaboration and Contributions
 
-This project is fully open source under the MIT License and welcomes contributions, forks, and integrations — including from the official Stremio team.
+This project is open source under a modified MIT License and welcomes contributions, forks, and collaborations — including from the official Stremio community.
 
-**Contact**: [Chimera Gaming GitHub Profile](https://github.com/ChimeraGaming)
+**Contact**: [ChimeraGaming on GitHub](https://github.com/ChimeraGaming)
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) © 2025 Chimera Gaming.
+This project is licensed under a [Modified MIT License](LICENSE) © 2025 Chimera Gaming. Redistribution or derivative works require contacting the author.
