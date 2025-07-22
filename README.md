@@ -17,7 +17,7 @@ This repository includes tools for **Stremio**, **Chromium-based browsers**, and
 ├── Stremio Addons and Extensions/
 │   ├── Chimera Folders/
 │   ├── Amazon Save for Later Organizer/
-│   ├── Questline/
+│   ├── TBD/
 │   └── ...
 └── (More tools/extensions coming soon)
 ```
