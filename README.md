@@ -1,5 +1,6 @@
 [![Stremio: Chimera Folders](https://img.shields.io/badge/Stremio-Chimera%20Folders-5E3A87?style=for-the-badge&logo=stremio&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Stremio%20Addons%20and%20Extensions/Chimera%20Folders)
 [![Amazon: Save for Later Organizer](https://img.shields.io/badge/Amazon-Save%20for%20Later%20Organizer-FF9900?style=for-the-badge&logo=amazon&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Amazon%20Save%20for%20Later%20Organizer)
+[![Chrome: Link Scraper](https://img.shields.io/badge/Chrome-Link%20Scraper-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/tree/main/Link%20Scraper)
 
 # Chimera Web Extensions
 
@@ -16,9 +17,10 @@ This repository includes tools for **Stremio**, **Chromium-based browsers**, and
 /Web-Extension/
 ├── Stremio Addons and Extensions/
 │   ├── Chimera Folders/
-│   ├── Amazon Save for Later Organizer/
-│   ├── TBD/
 │   └── ...
+├── Amazon Save for Later Organizer/
+├── Link Scraper/
+├── TBD/
 └── (More tools/extensions coming soon)
 ```
 
