@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Link Scraper",
-  "version": "1.12",
-  "description": "Scrapes links and auto fills descriptions with a copy all button.",
+  "version": "2.0",
+  "description": "Scrapes links and auto fills descriptions with a copy all button and filtering.",
   "permissions": ["activeTab", "scripting", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"
