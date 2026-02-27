@@ -6,3 +6,6 @@
 
 # Descriptions
 <img width="414" height="324" alt="image" src="https://github.com/user-attachments/assets/65288608-8ee5-43f7-9d41-77e0473d5f73" />
+
+#Copy
+<img width="1867" height="952" alt="image" src="https://github.com/user-attachments/assets/a47680f9-85f6-424f-be4a-fd6300aa0e3c" />
