@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0
+- Added an inline filter bar under the Scrape links button.
+- Pressing Enter in the filter bar now filters the current scrape by URL or description text.
+- Status line reports how many links match the filter.
+- Copy all now copies only the URLs from the filtered list, one per line, and ignores descriptions.
+
 ## v12
 - Matched scrollbar styling in the descriptions list with the main view.
 - Unified scrolling behavior across the entire bubble window.
