@@ -10,6 +10,7 @@
   window.__cgLinkScraperLoaded = true;
 
   var state = {
+    allLinks: [],
     links: [],
     editMode: false,
     descMode: false
@@ -84,7 +85,7 @@
     }
 
     .cg-top-btn.active {
-      background: radial-gradient(circle at 30 percent 0, #0f172a, #1d4ed8);
+      background: radial-gradient(circle at 30% 0, #0f172a, #1d4ed8);
       border-color: #3b82f6;
       color: #f9fafb;
       box-shadow: 0 0 0 1px rgba(59,130,246,0.5);
@@ -127,6 +128,35 @@
       cursor: pointer;
     }
 
+    #cg-status {
+      font-size: 11px;
+      color: #9ca3af;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #cg-filterBar {
+      margin-top: 4px;
+    }
+
+    #cg-filterInput {
+      width: 100%;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      outline: none;
+    }
+
+    #cg-filterInput:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
+    }
+
     #cg-mainView {
       flex: 1;
       background: #020617;
@@ -137,8 +167,8 @@
     }
 
     #cg-linksBox {
-      width: 100 percent;
-      height: 100 percent;
+      width: 100%;
+      height: 100%;
       border-radius: 12px;
       border: 1px solid #111827;
       background: #020617;
@@ -151,11 +181,11 @@
       word-wrap: break-word;
       overflow-y: auto;
       overflow-x: hidden;
-      font-family: ui-monospace, monospace;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     #cg-listView {
-      width: 100 percent;
+      width: 100%;
       display: none;
       overflow-y: auto;
       overflow-x: hidden;
@@ -201,12 +231,12 @@
     }
 
     .cg-row-desc {
-      grid-column: 2 span 2;
+      grid-column: 2 / span 2;
       margin-top: 2px;
     }
 
     .cg-row-desc textarea {
-      width: 100 percent;
+      width: 100%;
       font-size: 11px;
       padding: 4px 6px;
       border-radius: 8px;
@@ -261,6 +291,14 @@
       background: #020617;
     }
 
+    #cg-footerHint {
+      font-size: 10px;
+      color: #6b7280;
+      padding-top: 4px;
+      border-top: 1px solid #020617;
+      margin-top: 3px;
+    }
+
     #cg-resizeHandle {
       position: absolute;
       right: 8px;
@@ -269,7 +307,7 @@
       height: 14px;
       border-radius: 6px;
       border: 1px solid #4b5563;
-      background: radial-gradient(circle at 30 percent 0, #111827, #020617);
+      background: radial-gradient(circle at 30% 0, #111827, #020617);
       cursor: se-resize;
     }
   </style>
@@ -289,12 +327,16 @@
         <div id="cg-status">Ready.</div>
       </div>
 
+      <div id="cg-filterBar">
+        <input id="cg-filterInput" type="text" placeholder="Filter links here and press Enter">
+      </div>
+
       <div id="cg-mainView">
         <textarea id="cg-linksBox" readonly></textarea>
         <div id="cg-listView"></div>
       </div>
 
-      <div class="cg-footer-hint">
+      <div id="cg-footerHint">
         Edit mode adds numbered rows so you can delete links.
         Descriptions mode lets you attach notes.
         Copy only appears when both modes are off.
@@ -317,6 +359,7 @@
   var listView = root.querySelector("#cg-listView");
   var closeTopBtn = root.querySelector("#cg-closeTopBtn");
   var resizeHandle = root.querySelector("#cg-resizeHandle");
+  var filterInput = root.querySelector("#cg-filterInput");
 
   closeTopBtn.addEventListener("click", function () {
     root.style.display = "none";
@@ -388,12 +431,15 @@
   scrapeBtn.addEventListener("click", function () {
     statusEl.textContent = "Scraping links from page...";
     var linkObjs = collectLinksOnPage();
-    state.links = linkObjs.map(function (obj) {
+    state.allLinks = linkObjs.map(function (obj) {
       return {
         url: obj.url,
         desc: obj.label || ""
       };
     });
+    state.links = state.allLinks.slice();
+    buildTextarea();
+    render();
 
     if (state.links.length === 0) {
       statusEl.textContent = "No links found.";
@@ -401,7 +447,6 @@
       statusEl.textContent =
         "Found " + state.links.length + " unique links.";
     }
-    render();
   });
 
   editBtn.addEventListener("click", function () {
@@ -414,18 +459,52 @@
     render();
   });
 
-  primaryBtn.addEventListener("click", function () {
-    if (!state.editMode && !state.descMode) {
-      var text = linksBox.value.trim();
-      if (!text) return;
-      navigator.clipboard.writeText(text);
-      statusEl.textContent = "Copied.";
-    } else {
-      statusEl.textContent = "Saved.";
-      syncFromListView();
-      buildTextarea();
+primaryBtn.addEventListener("click", function () {
+  if (!state.editMode && !state.descMode) {
+    // Copy only URLs from the current filtered list
+    if (!state.links || !state.links.length) {
+      statusEl.textContent = "Nothing to copy.";
+      return;
+    }
+    var text = state.links
+      .map(function (item) { return item.url; })
+      .join("\n");
+    navigator.clipboard.writeText(text);
+    statusEl.textContent = "Copied.";
+  } else {
+    statusEl.textContent = "Saved.";
+    syncFromListView();
+    buildTextarea();
+  }
+});
+
+  filterInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      applyFilter();
     }
   });
+
+  function applyFilter() {
+    if (!state.allLinks.length) {
+      statusEl.textContent = "No links to filter. Use Scrape links first.";
+      return;
+    }
+    var q = filterInput.value.trim().toLowerCase();
+    if (!q) {
+      state.links = state.allLinks.slice();
+      statusEl.textContent =
+        "Filter cleared. Showing " + state.links.length + " links.";
+    } else {
+      state.links = state.allLinks.filter(function (item) {
+        var url = item.url.toLowerCase();
+        var desc = (item.desc || "").toLowerCase();
+        return url.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+      });
+      statusEl.textContent =
+        "Found " + state.links.length + " links matching \"" + q + "\".";
+    }
+    render();
+  }
 
   function render() {
     editBtn.classList.toggle("active", state.editMode);
@@ -449,7 +528,7 @@
       var d = (item.desc || "").trim();
       return d ? item.url + " - " + d : item.url;
     });
-    linksBox.value = lines.join("\\n");
+    linksBox.value = lines.join("\n");
   }
 
   function buildListView() {
@@ -511,7 +590,8 @@
 
     anchors.forEach(function (a) {
       var href = a.href;
-      if (!href.startsWith("http")) return;
+      if (!href || typeof href !== "string") return;
+      if (!href.startsWith("http://") && !href.startsWith("https://")) return;
       if (seen.has(href)) return;
 
       seen.add(href);
