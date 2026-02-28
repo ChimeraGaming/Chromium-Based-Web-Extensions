@@ -6,7 +6,7 @@
 - Pressing **Enter** in either box applies filters.
 - Filters always run on the full scraped list.
 - Filter In keeps matches, Filter Out removes matches.
-- Status line shows “Filtered X → Y links.” or “Filter cleared.”
+- Status line shows “Filtered X > Y links.” or “Filter cleared.”
 - Copy all now copies only filtered URLs, one per line.
 
 ## v2.0
