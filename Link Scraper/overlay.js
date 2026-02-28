@@ -139,9 +139,12 @@
 
     #cg-filterBar {
       margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    #cg-filterInput {
+    .cg-filterInput {
       width: 100%;
       padding: 4px 8px;
       font-size: 11px;
@@ -152,7 +155,7 @@
       outline: none;
     }
 
-    #cg-filterInput:focus {
+    .cg-filterInput:focus {
       border-color: #3b82f6;
       box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
     }
@@ -328,7 +331,8 @@
       </div>
 
       <div id="cg-filterBar">
-        <input id="cg-filterInput" type="text" placeholder="Filter links here and press Enter">
+        <input id="cg-filterInInput" class="cg-filterInput" type="text" placeholder="Filter in (include terms, comma or semicolon separated)">
+        <input id="cg-filterOutInput" class="cg-filterInput" type="text" placeholder="Filter out (exclude terms, comma or semicolon separated)">
       </div>
 
       <div id="cg-mainView">
@@ -359,7 +363,8 @@
   var listView = root.querySelector("#cg-listView");
   var closeTopBtn = root.querySelector("#cg-closeTopBtn");
   var resizeHandle = root.querySelector("#cg-resizeHandle");
-  var filterInput = root.querySelector("#cg-filterInput");
+  var filterInInput = root.querySelector("#cg-filterInInput");
+  var filterOutInput = root.querySelector("#cg-filterOutInput");
 
   closeTopBtn.addEventListener("click", function () {
     root.style.display = "none";
@@ -428,6 +433,13 @@
     e.preventDefault();
   });
 
+  function parseTerms(value) {
+    return value
+      .split(/[;,]/)
+      .map(function (s) { return s.trim().toLowerCase(); })
+      .filter(function (s) { return s.length > 0; });
+  }
+
   scrapeBtn.addEventListener("click", function () {
     statusEl.textContent = "Scraping links from page...";
     var linkObjs = collectLinksOnPage();
@@ -437,16 +449,14 @@
         desc: obj.label || ""
       };
     });
-    state.links = state.allLinks.slice();
-    buildTextarea();
-    render();
-
-    if (state.links.length === 0) {
+    if (!state.allLinks.length) {
+      state.links = [];
+      buildTextarea();
+      render();
       statusEl.textContent = "No links found.";
-    } else {
-      statusEl.textContent =
-        "Found " + state.links.length + " unique links.";
+      return;
     }
+    applyFilter();
   });
 
   editBtn.addEventListener("click", function () {
@@ -459,51 +469,76 @@
     render();
   });
 
-primaryBtn.addEventListener("click", function () {
-  if (!state.editMode && !state.descMode) {
-    // Copy only URLs from the current filtered list
-    if (!state.links || !state.links.length) {
-      statusEl.textContent = "Nothing to copy.";
-      return;
+  primaryBtn.addEventListener("click", function () {
+    if (!state.editMode && !state.descMode) {
+      if (!state.links || !state.links.length) {
+        statusEl.textContent = "Nothing to copy.";
+        return;
+      }
+      var text = state.links
+        .map(function (item) { return item.url; })
+        .join("\n");
+      navigator.clipboard.writeText(text);
+      statusEl.textContent = "Copied.";
+    } else {
+      statusEl.textContent = "Saved.";
+      syncFromListView();
+      buildTextarea();
     }
-    var text = state.links
-      .map(function (item) { return item.url; })
-      .join("\n");
-    navigator.clipboard.writeText(text);
-    statusEl.textContent = "Copied.";
-  } else {
-    statusEl.textContent = "Saved.";
-    syncFromListView();
-    buildTextarea();
-  }
-});
+  });
 
-  filterInput.addEventListener("keydown", function (e) {
+  function handleFilterKey(e) {
     if (e.key === "Enter") {
       applyFilter();
     }
-  });
+  }
+
+  filterInInput.addEventListener("keydown", handleFilterKey);
+  filterOutInput.addEventListener("keydown", handleFilterKey);
 
   function applyFilter() {
     if (!state.allLinks.length) {
       statusEl.textContent = "No links to filter. Use Scrape links first.";
       return;
     }
-    var q = filterInput.value.trim().toLowerCase();
-    if (!q) {
-      state.links = state.allLinks.slice();
+
+    var includeTerms = parseTerms(filterInInput.value || "");
+    var excludeTerms = parseTerms(filterOutInput.value || "");
+
+    var totalBefore = state.allLinks.length;
+
+    var filtered = state.allLinks.filter(function (item) {
+      var url = item.url.toLowerCase();
+      var desc = (item.desc || "").toLowerCase();
+      var haystack = url + " " + desc;
+
+      if (includeTerms.length) {
+        var includeMatch = includeTerms.some(function (term) {
+          return haystack.indexOf(term) !== -1;
+        });
+        if (!includeMatch) return false;
+      }
+
+      if (excludeTerms.length) {
+        var excludeMatch = excludeTerms.some(function (term) {
+          return haystack.indexOf(term) !== -1;
+        });
+        if (excludeMatch) return false;
+      }
+
+      return true;
+    });
+
+    state.links = filtered;
+    render();
+
+    if (!includeTerms.length && !excludeTerms.length) {
       statusEl.textContent =
         "Filter cleared. Showing " + state.links.length + " links.";
     } else {
-      state.links = state.allLinks.filter(function (item) {
-        var url = item.url.toLowerCase();
-        var desc = (item.desc || "").toLowerCase();
-        return url.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
-      });
       statusEl.textContent =
-        "Found " + state.links.length + " links matching \"" + q + "\".";
+        "Filtered " + totalBefore + " → " + state.links.length + " links.";
     }
-    render();
   }
 
   function render() {
