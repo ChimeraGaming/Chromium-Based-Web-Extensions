@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Link Scraper",
   "version": "3.0",
-  "description": "Scrapes links, Filtering, and Save as Meta4 File. Ready to be inputed into most Download Managers.",
+  "description": "Scrapes links, Filtering, and Save as Meta4 File. Ready to be inputted into most Download Managers.",
   "permissions": ["activeTab", "scripting", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"
