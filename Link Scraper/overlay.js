@@ -320,7 +320,7 @@
       <button id="cg-editBtn" class="cg-top-btn">Edit</button>
       <span id="cg-headerTitle">Link Scraper</span>
       <button id="cg-descBtn" class="cg-top-btn">Descriptions</button>
-      <button id="cg-primaryBtn" class="cg-top-btn">Copy all</button>
+      <button id="cg-primaryBtn" class="cg-top-btn">Save .meta4</button>
       <button id="cg-closeTopBtn" class="cg-top-btn">X</button>
     </div>
 
@@ -343,7 +343,7 @@
       <div id="cg-footerHint">
         Edit mode adds numbered rows so you can delete links.
         Descriptions mode lets you attach notes.
-        Copy only appears when both modes are off.
+        Saving as .meta4 only appears when both modes are off.
       </div>
     </div>
 
@@ -471,17 +471,16 @@
 
   primaryBtn.addEventListener("click", function () {
     if (!state.editMode && !state.descMode) {
+      // v3.0: Save filtered links as a .meta4 file for JDownloader
       if (!state.links || !state.links.length) {
-        statusEl.textContent = "Nothing to copy.";
+        statusEl.textContent = "Nothing to save.";
         return;
       }
-      var text = state.links
-        .map(function (item) { return item.url; })
-        .join("\n");
-      navigator.clipboard.writeText(text);
-      statusEl.textContent = "Copied.";
+      saveAsMeta4();
+      statusEl.textContent = "Saved .meta4 with " + state.links.length + " links.";
     } else {
-      statusEl.textContent = "Saved.";
+      // Edit / Descriptions mode: keep existing Save behavior (sync edits)
+      statusEl.textContent = "Saved edits.";
       syncFromListView();
       buildTextarea();
     }
@@ -548,7 +547,7 @@
     if (!state.editMode && !state.descMode) {
       linksBox.style.display = "block";
       listView.style.display = "none";
-      primaryBtn.textContent = "Copy all";
+      primaryBtn.textContent = "Save .meta4";
       buildTextarea();
     } else {
       linksBox.style.display = "none";
@@ -640,6 +639,65 @@
     });
 
     return results;
+  }
+
+  // v3.0: generate and download a .meta4 file containing all current links
+  function saveAsMeta4() {
+    function escapeXml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    var filesXml = state.links.map(function (item, index) {
+      var url = item.url || "";
+      var filename = "link" + (index + 1);
+
+      try {
+        var urlObj = new URL(url);
+        var path = urlObj.pathname;
+        if (path && path !== "/") {
+          var parts = path.split("/");
+          var last = parts[parts.length - 1] || parts[parts.length - 2] || "";
+          if (last) {
+            filename = last;
+          }
+        }
+      } catch (e) {
+        // if URL constructor fails, keep fallback filename
+      }
+
+      filename = escapeXml(filename);
+      var urlEsc = escapeXml(url);
+
+      return (
+        '  <file name="' + filename + '">\n' +
+        '    <url>' + urlEsc + '</url>\n' +
+        "  </file>"
+      );
+    }).join("\n");
+
+    var xml =
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<metalink xmlns="urn:ietf:params:xml:ns:metalink">\n' +
+      filesXml + "\n" +
+      "</metalink>\n";
+
+    var blob = new Blob([xml], { type: "application/metalink4+xml" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "links-" + Date.now() + ".meta4";
+
+    (document.body || document.documentElement).appendChild(a);
+    a.click();
+    setTimeout(function () {
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 0);
   }
 
   render();
