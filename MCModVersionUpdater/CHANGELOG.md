@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+<details open>
+<summary><strong>Version 0.3.0 </strong></summary>
+
+### Added
+- Mode-aware recommendation column in results:
+  - `Upgradable` in Upgrade mode
+  - `Downgradable` in Downgrade mode
+- Header-level table filters for quick narrowing during review
+- Filename prompt before export so users can name files before download
+- Optional Modrinth API key input in Setting
+- Themes!
+
+### Changed
+- Export flow is now JDownloader2-focused:
+  - outputs direct download links only
+  - respects currently active filters
+- Folder scanning now sends lightweight metadata payloads to avoid Chrome extension message size limits (64MiB class failures)
+- API key handling is now settings-only (removed file-based fallback config)
+- Settings page simplified by removing redundant or unused controls from previous version
+- Roadmap and release docs updated for current workflow
+
+### Fixed
+- Roadmap and Settings open behavior from injected panel context
+- CurseForge missing-key clarity:
+  - `Unknown` now replaced with `ADD CURSEFORGE API` where applicable
+
+</details>
+
+---
+
 <details>
 <summary><strong>Version 0.2.0</strong></summary>
 
