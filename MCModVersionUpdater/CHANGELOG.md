@@ -5,6 +5,21 @@ All notable changes to this project are documented here.
 ---
 
 <details open>
+<summary><strong>Version 0.3.1</strong></summary>
+
+### Added
+- Added extension icons across required sizes and manifest mappings
+
+### Fixed
+- Corrected all `1.26` references to `26.1`
+- Fixed upgrade logic to properly follow target-version matching behavior
+- Fixed export file conversion
+
+</details>
+
+---
+
+<details>
 <summary><strong>Version 0.3.0 </strong></summary>
 
 ### Added
@@ -13,16 +28,16 @@ All notable changes to this project are documented here.
   - `Downgradable` in Downgrade mode
 - Header-level table filters for quick narrowing during review
 - Filename prompt before export so users can name files before download
-- Optional Modrinth API key input in Setting
-- Themes!
+- Optional Modrinth API key input in Settings
 
 ### Changed
 - Export flow is now JDownloader2-focused:
-  - outputs direct download links only
+  - outputs `.meta4` (Metalink v4) using found direct download links
   - respects currently active filters
 - Folder scanning now sends lightweight metadata payloads to avoid Chrome extension message size limits (64MiB class failures)
 - API key handling is now settings-only (removed file-based fallback config)
-- Settings page simplified by removing redundant or unused controls from previous version
+- SNES theme naming and styling pass updated (`SNES`)
+- Settings page simplified by removing redundant or unused controls
 - Roadmap and release docs updated for current workflow
 
 ### Fixed
