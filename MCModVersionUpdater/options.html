@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mod Update Checker Settings</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 960px; margin: 30px auto; padding: 0 16px 30px; background: #0f172a; color: white; }
+    .card { background: #111827; border: 1px solid #374151; border-radius: 14px; padding: 18px; margin-top: 16px; }
+    h1, h2 { margin-top: 0; }
+    label { display: block; margin: 12px 0; color: #d1d5db; }
+    input[type="checkbox"], select, input[type="text"], textarea { margin-right: 8px; }
+    select, input[type="text"], textarea {
+      width: 100%;
+      max-width: 720px;
+      background: #1f2937;
+      color: white;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 6px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+      font-family: Consolas, monospace;
+    }
+    .btn { background: #2563eb; color: white; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; margin-right: 8px; }
+    .muted { color: #9ca3af; line-height: 1.5; }
+    #status { margin-top: 12px; color: #86efac; font-weight: 700; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Mod Update Checker Settings</h1>
+
+  <div class="card">
+    <h2>Core Settings</h2>
+    <label><input type="checkbox" id="includeBeta"> Include beta versions in recommendations</label>
+    <label><input type="checkbox" id="includeAlpha"> Include alpha versions in recommendations</label>
+    <label><input type="checkbox" id="reverseCompatible"> Search backwards from the target version if needed</label>
+
+    <label>Target Minecraft version
+      <input type="text" id="targetVersion" list="mcVersionList" autocomplete="off" spellcheck="false">
+      <datalist id="mcVersionList"></datalist>
+    </label>
+
+    <label>Default table size
+      <select id="density">
+        <option value="compact">Compact</option>
+        <option value="comfortable">Comfortable</option>
+        <option value="expanded">Expanded</option>
+      </select>
+    </label>
+
+    <label>Theme
+      <select id="theme">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="github-dark">Github (Dark)</option>
+        <option value="snes-rainbow">SNES</option>
+      </select>
+    </label>
+
+    <label>Minecraft version database - one per line
+      <textarea id="minecraftVersionDatabase"></textarea>
+    </label>
+  </div>
+
+  <div class="card">
+    <h2>Additional Sources</h2>
+    <label>Extra source URLs - one per line
+      <textarea id="additionalSourceUrls" placeholder="https://github.com/owner/repo&#10;https://example.com/docs"></textarea>
+    </label>
+    <div class="muted">
+      GitHub repo URLs open repo scoped searches. Other URLs open a site scoped search in a new tab.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>API and Cache</h2>
+    <label>CurseForge API key
+      <input type="text" id="curseforgeApiKey" autocomplete="off" spellcheck="false" placeholder="Leave blank in final builds">
+    </label>
+    <label>Modrinth API key (optional)
+      <input type="text" id="modrinthApiKey" autocomplete="off" spellcheck="false" placeholder="Optional for authenticated requests">
+    </label>
+
+    <button class="btn" id="saveBtn">Save settings</button>
+    <button class="btn" id="clearCacheBtn">Clear API cache</button>
+    <div id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Notes</h2>
+    <div class="muted">
+      This page is focused on scan behavior and API settings only. Save here, then rescan from the page panel.
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

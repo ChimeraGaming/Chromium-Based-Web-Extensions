@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mod Update Checker Roadmap</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 940px; margin: 30px auto; padding: 0 16px 30px; background: #0f172a; color: #f8fafc; }
+    .card { background: #111827; border: 1px solid #374151; border-radius: 14px; padding: 18px; margin-top: 16px; }
+    h1, h2 { margin-top: 0; }
+    ul { line-height: 1.7; margin: 0; padding-left: 20px; }
+    .done { color: #86efac; }
+    .now { color: #fde68a; }
+    .later { color: #cbd5e1; }
+    .muted { color: #94a3b8; line-height: 1.6; }
+    .stamp { color: #93c5fd; font-size: 12px; margin-top: -8px; }
+    code { color: #bfdbfe; }
+  </style>
+</head>
+<body>
+  <h1>Roadmap</h1>
+  <div class="stamp">Last updated: March 24, 2026 (v0.3.0)</div>
+
+  <div class="card">
+    <h2>What We Just Shipped</h2>
+    <ul class="done">
+      <li>Upgrade mode is now first-class, and Downgrade mode is fully wired in the same flow.</li>
+      <li>Roadmap and Settings open consistently from popup and injected panel.</li>
+      <li>Settings were cleaned up and simplified to only the controls that matter.</li>
+      <li>Duplicate handling and UI consistency got another pass for cleaner scan sessions.</li>
+      <li>The results view now supports theme switching: <code>Light</code>, <code>Dark</code>, <code>Github (Dark)</code>, and <code>SNES</code>.</li>
+      <li>Results now include a mode-aware column: <code>Upgradable</code> in Upgrade mode, <code>Downgradable</code> in Downgrade mode.</li>
+      <li>Export is now focused on JDownloader2: direct download links only from found versions, scoped to active filters, with a custom filename prompt before save.</li>
+      <li>Folder scanning was reworked to avoid the 64MiB extension message limit by sending lightweight metadata instead of full payloads.</li>
+      <li>API handling is now settings-first, with CurseForge and Modrinth keys managed directly in the Settings page.</li>
+      <li>When CurseForge API is missing, scan output now says <code>ADD CURSEFORGE API</code> instead of <code>Unknown</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Current Focus</h2>
+    <ul class="now">
+      <li>Improve version recommendation confidence when mods have renamed files or unusual packaging.</li>
+      <li>Keep reducing UI friction so scan-to-export stays fast, especially on large packs.</li>
+      <li>Tighten source clarity when multiple providers or partial matches exist.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Later Upgrades</h2>
+    <ul class="later">
+      <li>Deeper dependency awareness (optional warning pass before export).</li>
+      <li>Manual match correction for edge cases where automatic matching is close but not perfect.</li>
+      <li>Optional pack rebuild flow after review and link validation.</li>
+      <li>Richer source integrations for curated external repositories.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Flow We Are Optimizing</h2>
+    <div class="muted">
+      Upload pack or folder -> choose <code>Upgrade</code> or <code>Downgrade</code> -> set target version -> scan ->
+      review mode column and matches -> export direct links for JDownloader2.
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Mod Update Checker",
+  "version": "0.3.0",
+  "description": "Scan CurseForge or Modrinth modpack ZIPs, target a Minecraft version for conversion, compare mod availability, and open saved fallback searches.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://modrinth.com/*",
+    "https://api.modrinth.com/*",
+    "https://www.curseforge.com/*",
+    "https://api.curseforge.com/*",
+    "https://github.com/*",
+    "https://api.github.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://modrinth.com/*",
+        "https://www.curseforge.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}
