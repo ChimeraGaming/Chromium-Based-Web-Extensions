@@ -82,12 +82,49 @@
     ]
   };
 
+  function normalizeLegacyVersion(version) {
+    const clean = String(version || "").trim();
+    return clean === "1.26" ? "26.1" : clean;
+  }
+
+  function sanitizeMinecraftVersionDatabase(versions) {
+    const input = Array.isArray(versions) && versions.length ? versions : DEFAULTS.minecraftVersionDatabase;
+    const seen = new Set();
+    return input.filter((version) => {
+      const clean = normalizeLegacyVersion(version);
+      if (!clean || seen.has(clean)) return false;
+      seen.add(clean);
+      return true;
+    });
+  }
+
   async function getSettings() {
-    return new Promise((resolve) => chrome.storage.sync.get(DEFAULTS, resolve));
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(DEFAULTS, (items) => {
+        const normalized = {
+          ...items,
+          targetVersion: normalizeLegacyVersion(items.targetVersion),
+          minecraftVersionDatabase: sanitizeMinecraftVersionDatabase(items.minecraftVersionDatabase)
+        };
+        const changedTarget = normalized.targetVersion !== String(items.targetVersion || "");
+        const changedDb = JSON.stringify(normalized.minecraftVersionDatabase) !== JSON.stringify(items.minecraftVersionDatabase || DEFAULTS.minecraftVersionDatabase);
+        if (changedTarget || changedDb) {
+          chrome.storage.sync.set({
+            targetVersion: normalized.targetVersion,
+            minecraftVersionDatabase: normalized.minecraftVersionDatabase
+          }, () => resolve(normalized));
+          return;
+        }
+        resolve(normalized);
+      });
+    });
   }
 
   async function setSettings(partial) {
-    return new Promise((resolve) => chrome.storage.sync.set(partial, resolve));
+    const payload = { ...(partial || {}) };
+    if ("targetVersion" in payload) payload.targetVersion = normalizeLegacyVersion(payload.targetVersion);
+    if ("minecraftVersionDatabase" in payload) payload.minecraftVersionDatabase = sanitizeMinecraftVersionDatabase(payload.minecraftVersionDatabase);
+    return new Promise((resolve) => chrome.storage.sync.set(payload, resolve));
   }
 
   const THEMES = new Set(["light", "dark", "github-dark", "snes-rainbow"]);
@@ -151,6 +188,41 @@
     return cleaned || fallback;
   }
 
+  function escapeXml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  }
+
+  function inferExportFileName(url, fallbackName, index) {
+    let fromUrl = "";
+    try {
+      const parsed = new URL(url);
+      fromUrl = decodeURIComponent(parsed.pathname.split("/").pop() || "").trim();
+    } catch {}
+    const safe = sanitizeFilename(fromUrl || fallbackName || `mod-${index}`, `mod-${index}`);
+    return /\.[a-z0-9]{2,8}$/i.test(safe) ? safe : `${safe}.jar`;
+  }
+
+  function buildMeta4(entries) {
+    const lines = [
+      '<?xml version="1.0" encoding="utf-8"?>',
+      '<metalink xmlns="urn:ietf:params:xml:ns:metalink" version="4.0">',
+      "  <generator>Mod Update Checker v0.3.0</generator>",
+      `  <published>${new Date().toISOString()}</published>`
+    ];
+    for (const entry of entries) {
+      lines.push(`  <file name="${escapeXml(entry.name)}">`);
+      lines.push(`    <url>${escapeXml(entry.url)}</url>`);
+      lines.push("  </file>");
+    }
+    lines.push("</metalink>");
+    return lines.join("\n");
+  }
+
   function renderOverlay(scanResult, settings) {
     closeOverlay();
 
@@ -176,13 +248,18 @@
           && selectedVersion
           && rawCurrentVersion === selectedVersion;
         const matchBaseLabel = row.match || modFile;
-        const matchLabel = row.matchFound
-          ? `${matchBaseLabel}${row.provider ? ` - ${row.provider}` : ""}`
-          : "No match";
         const modrinthFiles = Array.isArray(row.recommended?.files) ? row.recommended.files : [];
         const primaryDownload = modrinthFiles.find((file) => file?.primary && file?.url) || modrinthFiles.find((file) => file?.url) || null;
-        const directDownloadUrl = primaryDownload?.url || "";
-        const modeAvailable = !!directDownloadUrl;
+        const directDownloadUrl = String(row.url || primaryDownload?.url || "").trim();
+        const searchedVersion = String(row.searchedVersion || "");
+        const strictVersionMatch = !selectedVersion || selectedVersion === "Unknown"
+          ? !!directDownloadUrl
+          : searchedVersion === selectedVersion;
+        const modeAvailable = !!directDownloadUrl && strictVersionMatch;
+        const matchFound = !!row.matchFound && modeAvailable;
+        const matchLabel = matchFound
+          ? `${matchBaseLabel}${row.provider ? ` - ${row.provider}` : ""}`
+          : "No match";
         return {
           modFile,
           currentVersion,
@@ -193,9 +270,10 @@
           modeClass: modeAvailable ? "ok" : "bad",
           modeAvailable,
           matchLabel,
-          matchUrl: row.url || row.listedUrl || "",
-          matchFound: !!row.matchFound,
-          directDownloadUrl
+          matchUrl: matchFound ? directDownloadUrl : "",
+          matchFound,
+          directDownloadUrl,
+          searchedVersion
         };
       })
       .sort((a, b) => a.modFile.localeCompare(b.modFile, undefined, { sensitivity: "base" }));
@@ -211,7 +289,7 @@
               <div class="muc-overlay-meta">Mode: ${escapeHtml(modeLabel)} | Loader: ${escapeHtml(scanResult.detectedLoader || "Unknown")} | Source MC: ${escapeHtml(scanResult.detectedGameVersion || "Unknown")} | Target MC: ${escapeHtml(selectedVersion || "Unknown")}</div>
             </div>
             <div class="muc-actions muc-overlay-actions">
-              <button class="muc-btn secondary" id="muc-export-jd2">Export JDownloader2</button>
+              <button class="muc-btn secondary" id="muc-export-jd2">Export META4</button>
               <button class="muc-btn secondary" id="muc-close-overlay">Close</button>
             </div>
           </div>
@@ -318,24 +396,48 @@
     overlay.querySelector("#muc-close-overlay").addEventListener("click", closeOverlay);
 
     overlay.querySelector("#muc-export-jd2").addEventListener("click", () => {
-      const unique = [...new Set(
-        filteredRows
-          .map((row) => String(row.directDownloadUrl || "").trim())
-          .filter(Boolean)
-      )];
-      if (!unique.length) {
+      const exportRows = filteredRows
+        .map((row) => ({
+          url: String(row.directDownloadUrl || "").trim(),
+          fallbackName: row.modFile || row.matchLabel || "mod"
+        }))
+        .filter((row) => row.url);
+
+      const seenUrls = new Set();
+      const uniqueRows = exportRows.filter((row) => {
+        if (seenUrls.has(row.url)) return false;
+        seenUrls.add(row.url);
+        return true;
+      });
+
+      if (!uniqueRows.length) {
         alert("No direct download links were found for the current filters.");
         return;
       }
+
+      const usedNames = new Map();
+      const entries = uniqueRows.map((row, idx) => {
+        const rawName = inferExportFileName(row.url, row.fallbackName, idx + 1);
+        const lower = rawName.toLowerCase();
+        const count = (usedNames.get(lower) || 0) + 1;
+        usedNames.set(lower, count);
+        if (count === 1) return { name: rawName, url: row.url };
+        const extMatch = rawName.match(/(\.[a-z0-9]{2,8})$/i);
+        const ext = extMatch ? extMatch[1] : "";
+        const base = ext ? rawName.slice(0, -ext.length) : rawName;
+        return { name: `${base}-${count}${ext}`, url: row.url };
+      });
+
+      const meta4 = buildMeta4(entries);
       const baseName = sanitizeFilename(
         String(scanResult.fileName || "mod-update-results").replace(/\.[^/.]+$/, ""),
         "mod-update-results"
       );
-      const suggested = `${baseName}-${modeLabel.toLowerCase()}-jd2-links.txt`;
+      const suggested = `${baseName}-${modeLabel.toLowerCase()}-links.meta4`;
       const userName = window.prompt("Save export as:", suggested);
       if (userName === null) return;
-      const finalName = `${sanitizeFilename(String(userName || "").replace(/\.txt$/i, ""), "mod-update-jdownloader2-links")}.txt`;
-      downloadText(finalName, unique.join("\n"), "text/plain;charset=utf-8");
+      const finalName = `${sanitizeFilename(String(userName || "").replace(/\.meta4$/i, ""), "mod-update-links")}.meta4`;
+      downloadText(finalName, meta4, "application/metalink4+xml;charset=utf-8");
     });
   }
 
@@ -650,4 +752,5 @@
     await handleFile(file, uploadBtn, root);
   });
 })();
+
 

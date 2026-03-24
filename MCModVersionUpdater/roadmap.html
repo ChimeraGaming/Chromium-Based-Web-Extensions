@@ -29,7 +29,7 @@
       <li>Duplicate handling and UI consistency got another pass for cleaner scan sessions.</li>
       <li>The results view now supports theme switching: <code>Light</code>, <code>Dark</code>, <code>Github (Dark)</code>, and <code>SNES</code>.</li>
       <li>Results now include a mode-aware column: <code>Upgradable</code> in Upgrade mode, <code>Downgradable</code> in Downgrade mode.</li>
-      <li>Export is now focused on JDownloader2: direct download links only from found versions, scoped to active filters, with a custom filename prompt before save.</li>
+      <li>Export is now focused on JDownloader2: `.meta4` output from found direct links, scoped to active filters, with a custom filename prompt before save.</li>
       <li>Folder scanning was reworked to avoid the 64MiB extension message limit by sending lightweight metadata instead of full payloads.</li>
       <li>API handling is now settings-first, with CurseForge and Modrinth keys managed directly in the Settings page.</li>
       <li>When CurseForge API is missing, scan output now says <code>ADD CURSEFORGE API</code> instead of <code>Unknown</code>.</li>
@@ -59,7 +59,7 @@
     <h2>Flow We Are Optimizing</h2>
     <div class="muted">
       Upload pack or folder -> choose <code>Upgrade</code> or <code>Downgrade</code> -> set target version -> scan ->
-      review mode column and matches -> export direct links for JDownloader2.
+      review mode column and matches -> export `.meta4` for JDownloader2.
     </div>
   </div>
 </body>

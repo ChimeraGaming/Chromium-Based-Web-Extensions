@@ -37,6 +37,11 @@ function normalizeSourceUrl(url) {
   return normalized.replace(/\/$/, "");
 }
 
+function normalizeLegacyVersion(version) {
+  const clean = String(version || "").trim();
+  return clean === "1.26" ? "26.1" : clean;
+}
+
 function sanitizeAdditionalSourceUrls(urls) {
   const combined = [...REQUIRED_ADDITIONAL_SOURCES, ...((urls || []).map(normalizeSourceUrl))];
   const seen = new Set();
@@ -51,7 +56,7 @@ function sanitizeMinecraftVersionDatabase(versions) {
   const input = Array.isArray(versions) && versions.length ? versions : defaults.minecraftVersionDatabase;
   const seen = new Set();
   return input.filter((version) => {
-    const clean = String(version || "").trim();
+    const clean = normalizeLegacyVersion(version);
     if (!clean || seen.has(clean)) return false;
     seen.add(clean);
     return true;
@@ -63,11 +68,23 @@ function populateVersions(selected, versions) {
   list.innerHTML = sanitizeMinecraftVersionDatabase(versions || defaults.minecraftVersionDatabase)
     .map((v) => `<option value="${v}"></option>`)
     .join("");
-  document.getElementById("targetVersion").value = selected || "";
+  document.getElementById("targetVersion").value = normalizeLegacyVersion(selected || "");
 }
 
 function loadSettings() {
   chrome.storage.sync.get(defaults, (items) => {
+    const versionDb = sanitizeMinecraftVersionDatabase(items.minecraftVersionDatabase);
+    const targetVersion = normalizeLegacyVersion(items.targetVersion || "");
+    const changedVersionDb = JSON.stringify(versionDb) !== JSON.stringify(items.minecraftVersionDatabase || []);
+    const changedTargetVersion = targetVersion !== String(items.targetVersion || "");
+
+    if (changedVersionDb || changedTargetVersion) {
+      chrome.storage.sync.set({
+        minecraftVersionDatabase: versionDb.length ? versionDb : defaults.minecraftVersionDatabase,
+        targetVersion
+      });
+    }
+
     document.getElementById("includeBeta").checked = items.includeBeta;
     document.getElementById("includeAlpha").checked = items.includeAlpha;
     document.getElementById("reverseCompatible").checked = items.reverseCompatible !== false;
@@ -75,9 +92,9 @@ function loadSettings() {
     document.getElementById("theme").value = items.theme || "light";
     document.getElementById("curseforgeApiKey").value = items.curseforgeApiKey || "";
     document.getElementById("modrinthApiKey").value = items.modrinthApiKey || "";
-    document.getElementById("minecraftVersionDatabase").value = (items.minecraftVersionDatabase || defaults.minecraftVersionDatabase).join("\n");
+    document.getElementById("minecraftVersionDatabase").value = versionDb.join("\n");
     document.getElementById("additionalSourceUrls").value = (items.additionalSourceUrls || []).join("\n");
-    populateVersions(items.targetVersion || "", items.minecraftVersionDatabase || defaults.minecraftVersionDatabase);
+    populateVersions(targetVersion, versionDb);
   });
 }
 
@@ -96,7 +113,7 @@ function saveSettings() {
     includeBeta: document.getElementById("includeBeta").checked,
     includeAlpha: document.getElementById("includeAlpha").checked,
     reverseCompatible: document.getElementById("reverseCompatible").checked,
-    targetVersion: document.getElementById("targetVersion").value.trim(),
+    targetVersion: normalizeLegacyVersion(document.getElementById("targetVersion").value),
     theme: document.getElementById("theme").value || "light",
     curseforgeApiKey: document.getElementById("curseforgeApiKey").value.trim(),
     modrinthApiKey: document.getElementById("modrinthApiKey").value.trim(),

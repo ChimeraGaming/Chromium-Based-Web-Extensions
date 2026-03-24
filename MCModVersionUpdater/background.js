@@ -28,6 +28,22 @@ const DEFAULT_OPTIONS = {
 async function getLocalStorage(keys) { return await chrome.storage.local.get(keys); }
 async function setLocalStorage(payload) { return await chrome.storage.local.set(payload); }
 
+function normalizeLegacyVersion(version) {
+  const clean = String(version || "").trim();
+  return clean === "1.26" ? "26.1" : clean;
+}
+
+function sanitizeMinecraftVersionDatabase(versions) {
+  const input = Array.isArray(versions) && versions.length ? versions : DEFAULT_OPTIONS.minecraftVersionDatabase;
+  const seen = new Set();
+  return input.filter((version) => {
+    const clean = normalizeLegacyVersion(version);
+    if (!clean || seen.has(clean)) return false;
+    seen.add(clean);
+    return true;
+  });
+}
+
 function normalizeArrayBuffer(input) {
   if (input instanceof ArrayBuffer) return input;
   if (Array.isArray(input)) return new Uint8Array(input).buffer;
@@ -101,7 +117,7 @@ function extractMinecraftVersionFromFilename(fileName) {
     const match = raw.match(pattern);
     if (!match) continue;
     const version = match[2] || match[1];
-    if (version) return version;
+    if (version) return normalizeLegacyVersion(version);
   }
 
   return "Unknown";
@@ -173,19 +189,22 @@ function detectLoader(manifest, modrinthIndex, jarNames) {
 }
 
 function detectGameVersion(manifest, modrinthIndex, jarNames) {
-  if (manifest?.minecraft?.version) return manifest.minecraft.version;
-  if (modrinthIndex?.dependencies?.minecraft) return modrinthIndex.dependencies.minecraft;
+  if (manifest?.minecraft?.version) return normalizeLegacyVersion(manifest.minecraft.version);
+  if (modrinthIndex?.dependencies?.minecraft) return normalizeLegacyVersion(modrinthIndex.dependencies.minecraft);
 
   for (const name of jarNames) {
     const match = name.match(/mc(\d+\.\d+(?:\.\d+)?)/i) || name.match(/(?:^|[-_])(\d+\.\d+(?:\.\d+)?)(?:[-_]|$)/);
-    if (match) return match[1];
+    if (match) return normalizeLegacyVersion(match[1]);
   }
   return "Unknown";
 }
 
 function buildVersionSearchPath(versionDatabase, targetVersion, detectedVersion, reverseCompatible) {
-  const db = Array.isArray(versionDatabase) && versionDatabase.length ? versionDatabase : DEFAULT_OPTIONS.minecraftVersionDatabase;
-  const baseVersion = targetVersion || detectedVersion || "";
+  const db = sanitizeMinecraftVersionDatabase(versionDatabase);
+  const strictTarget = normalizeLegacyVersion(targetVersion || "");
+  if (strictTarget) return [strictTarget];
+
+  const baseVersion = normalizeLegacyVersion(detectedVersion || "");
   if (!baseVersion) return [];
   if (!db.includes(baseVersion)) return [baseVersion];
   const start = db.indexOf(baseVersion);
@@ -332,7 +351,7 @@ async function curseforgeGetFile(projectId, fileId, apiKey) {
 function extractMinecraftVersionFromCurseForgeFile(fileData) {
   const versions = Array.isArray(fileData?.gameVersions) ? fileData.gameVersions : [];
   const direct = versions.find((value) => /^\d+\.\d+(?:\.\d+)?$/.test(String(value || "").trim()));
-  if (direct) return direct;
+  if (direct) return normalizeLegacyVersion(direct);
   return extractMinecraftVersionFromFilename(fileData?.fileName || "");
 }
 
@@ -424,6 +443,7 @@ async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options
   let recommended = null;
   let recommendedType = null;
   let searchedVersion = null;
+  let recommendedFile = null;
 
   if (chosen?.project_id) {
     const toCheck = searchPath.length ? searchPath : ["Unknown"];
@@ -438,24 +458,31 @@ async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options
           latestAlpha = channels.alpha;
           recommended = rec.data;
           recommendedType = rec.type;
-          searchedVersion = version;
-          break;
+          if (recommended) {
+            const files = Array.isArray(recommended.files) ? recommended.files : [];
+            recommendedFile = files.find((file) => file?.primary && file?.url) || files.find((file) => file?.url) || null;
+            searchedVersion = version;
+            break;
+          }
         }
       } catch {}
     }
   }
 
-  const status = decideStatus(parsed.installedVersion, recommended?.version_number || recommended?.name, baseRow.sourceType, !!chosen);
+  const matchFound = !!chosen && !!recommended && !!recommendedFile?.url;
+  const status = decideStatus(parsed.installedVersion, recommended?.version_number || recommended?.name, baseRow.sourceType, matchFound);
   return {
     ...baseRow,
     provider: "modrinth",
     slugGuess: parsed.slugGuess,
     installedVersion: parsed.installedVersion,
     query: parsed.query,
-    matchFound: !!chosen,
-    match: chosen?.title || null,
+    matchFound,
+    match: matchFound ? (chosen?.title || null) : null,
     slug: chosen?.slug || null,
-    url: chosen?.slug ? `https://modrinth.com/mod/${chosen.slug}` : null,
+    url: recommendedFile?.url || null,
+    projectUrl: chosen?.slug ? `https://modrinth.com/mod/${chosen.slug}` : null,
+    recommendedFileName: recommendedFile?.filename || null,
     latestRelease,
     latestBeta,
     latestAlpha,
@@ -469,6 +496,8 @@ async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options
 
 async function scanEntries(entries, fileName, options = {}, progress = () => {}) {
   const scanOptions = { ...DEFAULT_OPTIONS, ...(options || {}) };
+  scanOptions.targetVersion = normalizeLegacyVersion(scanOptions.targetVersion);
+  scanOptions.minecraftVersionDatabase = sanitizeMinecraftVersionDatabase(scanOptions.minecraftVersionDatabase);
 
   const manifestEntry = entries.find((entry) => entry.fileName.toLowerCase() === "manifest.json" && entry.data);
   const modrinthIndexEntry = entries.find((entry) => entry.fileName.toLowerCase() === "modrinth.index.json" && entry.data);
