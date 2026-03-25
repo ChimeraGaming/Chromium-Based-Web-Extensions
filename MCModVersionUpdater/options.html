@@ -4,17 +4,36 @@
   <meta charset="utf-8" />
   <title>Mod Update Checker Settings</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 960px; margin: 30px auto; padding: 0 16px 30px; background: #0f172a; color: white; }
-    .card { background: #111827; border: 1px solid #374151; border-radius: 14px; padding: 18px; margin-top: 16px; }
-    h1, h2 { margin-top: 0; }
-    label { display: block; margin: 12px 0; color: #d1d5db; }
+    body {
+      --bg: #f8fafc;
+      --fg: #111827;
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --label: #374151;
+      --input-bg: #ffffff;
+      --input-fg: #111827;
+      --input-border: #cbd5e1;
+      --accent: #2563eb;
+      --muted: #6b7280;
+      --status: #166534;
+      font-family: Arial, sans-serif;
+      max-width: 960px;
+      margin: 30px auto;
+      padding: 0 16px 30px;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; margin-top: 16px; }
+    h1, h2 { margin-top: 0; color: var(--fg); }
+    label { display: block; margin: 12px 0; color: var(--label); }
     input[type="checkbox"], select, input[type="text"], textarea { margin-right: 8px; }
+    input[type="checkbox"] { accent-color: var(--accent); }
     select, input[type="text"], textarea {
       width: 100%;
       max-width: 720px;
-      background: #1f2937;
-      color: white;
-      border: 1px solid #374151;
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border: 1px solid var(--input-border);
       border-radius: 10px;
       padding: 8px 10px;
       margin-top: 6px;
@@ -25,9 +44,51 @@
       resize: vertical;
       font-family: Consolas, monospace;
     }
-    .btn { background: #2563eb; color: white; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; margin-right: 8px; }
-    .muted { color: #9ca3af; line-height: 1.5; }
-    #status { margin-top: 12px; color: #86efac; font-weight: 700; min-height: 20px; }
+    .btn { background: var(--accent); color: white; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; margin-right: 8px; }
+    .muted { color: var(--muted); line-height: 1.5; }
+    #status { margin-top: 12px; color: var(--status); font-weight: 700; min-height: 20px; }
+
+    body.muc-theme-dark {
+      --bg: #0f172a;
+      --fg: #f8fafc;
+      --card-bg: #111827;
+      --card-border: #374151;
+      --label: #d1d5db;
+      --input-bg: #1f2937;
+      --input-fg: #f8fafc;
+      --input-border: #374151;
+      --accent: #2563eb;
+      --muted: #9ca3af;
+      --status: #86efac;
+    }
+
+    body.muc-theme-github-dark {
+      --bg: #0d1117;
+      --fg: #c9d1d9;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --label: #c9d1d9;
+      --input-bg: #0d1117;
+      --input-fg: #c9d1d9;
+      --input-border: #30363d;
+      --accent: #2f81f7;
+      --muted: #8b949e;
+      --status: #3fb950;
+    }
+
+    body.muc-theme-snes-rainbow {
+      --bg: #23203d;
+      --fg: #ecebff;
+      --card-bg: #2b2847;
+      --card-border: #5f5b85;
+      --label: #ecebff;
+      --input-bg: #3a365d;
+      --input-fg: #ecebff;
+      --input-border: #5f5b85;
+      --accent: #8f8acb;
+      --muted: #d0cdf2;
+      --status: #9cff7f;
+    }
   </style>
 </head>
 <body>

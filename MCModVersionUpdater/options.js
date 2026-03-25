@@ -45,6 +45,21 @@ function normalizeLegacyVersion(version) {
   return clean === "1.26" ? "26.1" : clean;
 }
 
+const THEMES = new Set(["light", "dark", "github-dark", "snes-rainbow"]);
+
+function normalizeTheme(theme) {
+  const clean = String(theme || "").trim().toLowerCase();
+  return THEMES.has(clean) ? clean : "light";
+}
+
+function applyTheme(theme) {
+  const body = document.body;
+  if (!body) return;
+  const classes = ["muc-theme-light", "muc-theme-dark", "muc-theme-github-dark", "muc-theme-snes-rainbow"];
+  body.classList.remove(...classes);
+  body.classList.add(`muc-theme-${normalizeTheme(theme)}`);
+}
+
 function sanitizeAdditionalSourceUrls(urls) {
   const combined = [...REQUIRED_ADDITIONAL_SOURCES, ...((urls || []).map(normalizeSourceUrl))];
   const seen = new Set();
@@ -95,7 +110,9 @@ function loadSettings() {
     document.getElementById("ignoreCurrentVersionMods").checked = items.ignoreCurrentVersionMods === true;
     document.getElementById("onlyUpdatesCurrentSelected").checked = items.onlyUpdatesCurrentSelected === true;
     document.getElementById("density").value = items.density || "comfortable";
-    document.getElementById("theme").value = items.theme || "light";
+    const theme = normalizeTheme(items.theme || "light");
+    document.getElementById("theme").value = theme;
+    applyTheme(theme);
     document.getElementById("curseforgeApiKey").value = items.curseforgeApiKey || "";
     document.getElementById("modrinthApiKey").value = items.modrinthApiKey || "";
     document.getElementById("minecraftVersionDatabase").value = versionDb.join("\n");
@@ -126,7 +143,7 @@ function saveSettings() {
     ignoreCurrentVersionMods: onlyUpdatesCurrentSelected ? false : ignoreCurrentVersionMods,
     onlyUpdatesCurrentSelected,
     targetVersion: normalizeLegacyVersion(document.getElementById("targetVersion").value),
-    theme: document.getElementById("theme").value || "light",
+    theme: normalizeTheme(document.getElementById("theme").value || "light"),
     curseforgeApiKey: document.getElementById("curseforgeApiKey").value.trim(),
     modrinthApiKey: document.getElementById("modrinthApiKey").value.trim(),
     density: document.getElementById("density").value,
@@ -135,6 +152,7 @@ function saveSettings() {
   };
 
   chrome.storage.sync.set(payload, () => {
+    applyTheme(payload.theme);
     const status = document.getElementById("status");
     status.textContent = "Settings saved.";
     setTimeout(() => { status.textContent = ""; }, 1800);
@@ -170,3 +188,10 @@ document.getElementById("saveBtn").addEventListener("click", saveSettings);
 document.getElementById("clearCacheBtn").addEventListener("click", clearCache);
 bindExclusiveToggles();
 loadSettings();
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "sync" || !changes?.theme) return;
+  const theme = normalizeTheme(changes.theme.newValue);
+  document.getElementById("theme").value = theme;
+  applyTheme(theme);
+});

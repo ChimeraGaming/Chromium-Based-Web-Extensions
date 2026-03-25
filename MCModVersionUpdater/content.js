@@ -311,7 +311,7 @@
     const lines = [
       '<?xml version="1.0" encoding="utf-8"?>',
       '<metalink xmlns="urn:ietf:params:xml:ns:metalink" version="4.0">',
-      "  <generator>Mod Update Checker v0.3.2</generator>",
+      "  <generator>Mod Update Checker v1.0.0</generator>",
       `  <published>${new Date().toISOString()}</published>`
     ];
     for (const entry of entries) {
@@ -784,7 +784,7 @@
     <div class="muc-card">
       <button class="muc-panel-close" id="muc-card-close" aria-label="Close">×</button>
       <div class="muc-title">Check Mod Updates?</div>
-      <div class="muc-text">Upload or drag in a CurseForge or Modrinth ZIP. Pick what you want to do first, then scan.</div>
+      <div class="muc-text">Upload or drag in a CurseForge or Modrinth ZIP. Pick what you want to do first, then scan. Advanced scan toggles now live in Settings.</div>
 
       <div class="muc-mode-row">
         <button class="muc-btn active" id="muc-mode-mods">Upgrade</button>
@@ -802,47 +802,6 @@
           <input class="muc-input" id="muc-target-version" list="muc-version-list" placeholder="Use detected source version">
           <datalist id="muc-version-list"></datalist>
         </div>
-        <div class="muc-field">
-          <label class="muc-label">Theme</label>
-          <select class="muc-select" id="muc-theme">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="github-dark">Github (Dark)</option>
-            <option value="snes-rainbow">SNES</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="muc-switch-row">
-        <div class="muc-switch-label">Search backwards if target version has no result</div>
-        <label class="muc-switch">
-          <input type="checkbox" id="muc-reverse-compatible">
-          <span class="muc-slider"></span>
-        </label>
-      </div>
-
-      <div class="muc-switch-row">
-        <div class="muc-switch-label">Fuzzy search descriptions for replacement mods</div>
-        <label class="muc-switch">
-          <input type="checkbox" id="muc-fuzzy-replacement-search">
-          <span class="muc-slider"></span>
-        </label>
-      </div>
-
-      <div class="muc-switch-row">
-        <div class="muc-switch-label">Ignore mods already on selected target version</div>
-        <label class="muc-switch">
-          <input type="checkbox" id="muc-ignore-current-version">
-          <span class="muc-slider"></span>
-        </label>
-      </div>
-
-      <div class="muc-switch-row">
-        <div class="muc-switch-label">Only check updates for mods already on selected target version</div>
-        <label class="muc-switch">
-          <input type="checkbox" id="muc-only-updates-current-selected">
-          <span class="muc-slider"></span>
-        </label>
       </div>
 
       <div class="muc-source-row" id="muc-source-summary"></div>
@@ -917,18 +876,14 @@
   const newFileInput = root.querySelector("#muc-new-file");
   const newFolderInput = root.querySelector("#muc-new-folder");
   const targetInput = root.querySelector("#muc-target-version");
-  const reverseCheck = root.querySelector("#muc-reverse-compatible");
-  const fuzzyReplacementCheck = root.querySelector("#muc-fuzzy-replacement-search");
-  const ignoreCurrentVersionCheck = root.querySelector("#muc-ignore-current-version");
-  const onlyUpdatesCurrentSelectedCheck = root.querySelector("#muc-only-updates-current-selected");
   const versionList = root.querySelector("#muc-version-list");
   const modeModsBtn = root.querySelector("#muc-mode-mods");
   const modeDownBtn = root.querySelector("#muc-mode-downgrade");
-  const themeSelect = root.querySelector("#muc-theme");
   const openSettingsBtn = root.querySelector("#muc-open-settings");
   const openRoadmapBtn = root.querySelector("#muc-open-roadmap");
   const sourceSummary = root.querySelector("#muc-source-summary");
   const compareUploads = { old: null, newer: null };
+  let ignoreCurrentVersionMode = false;
 
   function describeSelection(selection) {
     if (!selection) return "Not selected";
@@ -959,7 +914,7 @@
   }
 
   function updateUploadModeLayout() {
-    const dualMode = ignoreCurrentVersionCheck.checked;
+    const dualMode = ignoreCurrentVersionMode === true;
     standardUploadSection.hidden = dualMode;
     dualUploadSection.hidden = !dualMode;
     if (!dualMode) resetCompareSelections();
@@ -978,16 +933,9 @@
     const versions = (settings.minecraftVersionDatabase && settings.minecraftVersionDatabase.length) ? settings.minecraftVersionDatabase : DEFAULTS.minecraftVersionDatabase;
     versionList.innerHTML = versions.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
     targetInput.value = settings.targetVersion || "";
-    reverseCheck.checked = settings.reverseCompatible !== false;
-    fuzzyReplacementCheck.checked = settings.fuzzyDescriptionReplacementSearch === true;
-    ignoreCurrentVersionCheck.checked = settings.ignoreCurrentVersionMods === true;
-    onlyUpdatesCurrentSelectedCheck.checked = settings.onlyUpdatesCurrentSelected === true;
-    if (onlyUpdatesCurrentSelectedCheck.checked) {
-      ignoreCurrentVersionCheck.checked = false;
-    }
+    ignoreCurrentVersionMode = settings.ignoreCurrentVersionMods === true && settings.onlyUpdatesCurrentSelected !== true;
     updateUploadModeLayout();
-    themeSelect.value = normalizeTheme(settings.theme);
-    setThemeClass(root, themeSelect.value);
+    setThemeClass(root, normalizeTheme(settings.theme));
 
     if ((settings.scanMode || "mods") === "downgrade") {
       modeDownBtn.classList.add("active");
@@ -1001,31 +949,6 @@
   });
 
   targetInput.addEventListener("change", async () => { await setSettings({ targetVersion: targetInput.value.trim() }); });
-  reverseCheck.addEventListener("change", async () => { await setSettings({ reverseCompatible: reverseCheck.checked }); });
-  fuzzyReplacementCheck.addEventListener("change", async () => {
-    await setSettings({ fuzzyDescriptionReplacementSearch: fuzzyReplacementCheck.checked });
-  });
-  ignoreCurrentVersionCheck.addEventListener("change", async () => {
-    if (ignoreCurrentVersionCheck.checked) onlyUpdatesCurrentSelectedCheck.checked = false;
-    updateUploadModeLayout();
-    await setSettings({
-      ignoreCurrentVersionMods: ignoreCurrentVersionCheck.checked,
-      onlyUpdatesCurrentSelected: onlyUpdatesCurrentSelectedCheck.checked
-    });
-  });
-  onlyUpdatesCurrentSelectedCheck.addEventListener("change", async () => {
-    if (onlyUpdatesCurrentSelectedCheck.checked) ignoreCurrentVersionCheck.checked = false;
-    updateUploadModeLayout();
-    await setSettings({
-      ignoreCurrentVersionMods: ignoreCurrentVersionCheck.checked,
-      onlyUpdatesCurrentSelected: onlyUpdatesCurrentSelectedCheck.checked
-    });
-  });
-  themeSelect.addEventListener("change", async () => {
-    const theme = normalizeTheme(themeSelect.value);
-    setThemeClass(root, theme);
-    await setSettings({ theme });
-  });
 
   modeModsBtn.addEventListener("click", async () => {
     modeModsBtn.classList.add("active");
@@ -1148,13 +1071,21 @@
   });
 
   dropzone.addEventListener("drop", async (e) => {
-    if (ignoreCurrentVersionCheck.checked) {
+    if (ignoreCurrentVersionMode) {
       alert("Use Upload Old and Upload New when ignore mode is enabled.");
       return;
     }
     const file = e.dataTransfer?.files?.[0];
     if (!file) return;
     await handleFile(file, uploadBtn, root);
+  });
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== "sync" || !changes?.theme) return;
+    const nextTheme = normalizeTheme(changes.theme.newValue);
+    setThemeClass(root, nextTheme);
+    const overlay = document.getElementById("muc-overlay");
+    if (overlay) setThemeClass(overlay, nextTheme);
   });
 })();
 
