@@ -5,6 +5,39 @@ All notable changes to this project are documented here.
 ---
 
 <details open>
+<summary><strong>Version 1.x</strong></summary>
+
+<details open>
+<summary><strong>Version 1.0.0</strong></summary>
+
+### Changed
+- Promoted the extension to the `1.0.0` stable release line
+- Moved advanced runtime toggles to the Settings page for a cleaner in-page panel:
+  - reverse search
+  - fuzzy replacement search
+  - ignore current-target mods
+  - only updates on current-target mods
+- Moved Theme selection to Settings-only while keeping live theme updates on save
+
+### Improved
+- Match column now clearly separates links:
+  - `Direct - Source` for exportable file links
+  - `Site - Source` for project pages (excluded from export)
+- Results filtering now supports `;` token lists and Last Updated sort direction control
+
+### Refined
+- Removed redundant legacy script `content_display_filename.js` (unused by manifest and no remaining references)
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><strong>Beta (0.x)</strong></summary>
+
+<details open>
 <summary><strong>Version 0.3.2</strong></summary>
 
 ### Added
@@ -27,8 +60,6 @@ All notable changes to this project are documented here.
 
 </details>
 
----
-
 <details>
 <summary><strong>Version 0.3.1</strong></summary>
 
@@ -41,8 +72,6 @@ All notable changes to this project are documented here.
 - Fixed export file conversion
 
 </details>
-
----
 
 <details>
 <summary><strong>Version 0.3.0 </strong></summary>
@@ -72,8 +101,6 @@ All notable changes to this project are documented here.
 
 </details>
 
----
-
 <details>
 <summary><strong>Version 0.2.0</strong></summary>
 
@@ -98,8 +125,6 @@ All notable changes to this project are documented here.
 
 </details>
 
----
-
 <details>
 <summary><strong>Version 0.1.0</strong></summary>
 
@@ -118,5 +143,7 @@ All notable changes to this project are documented here.
 - Popup interface and injected panel UI
 - Settings page
 - Roadmap page
+
+</details>
 
 </details>
