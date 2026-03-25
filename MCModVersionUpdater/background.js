@@ -4,6 +4,9 @@ const DEFAULT_OPTIONS = {
   preferredSource: "modrinth",
   targetVersion: "",
   reverseCompatible: true,
+  fuzzyDescriptionReplacementSearch: false,
+  ignoreCurrentVersionMods: false,
+  onlyUpdatesCurrentSelected: false,
   curseforgeApiKey: "",
   modrinthApiKey: "",
   additionalSourceUrls: [],
@@ -303,10 +306,12 @@ function modrinthHeaders(apiKey) {
   return headers;
 }
 
-async function modrinthSearch(query, apiKey) {
+async function modrinthSearch(query, apiKey, limit = 5) {
+  const safeLimit = Math.max(1, Math.min(50, Number(limit) || 5));
+  const normalizedQuery = String(query || "").trim();
   return (await cachedFetchJson(
-    `https://api.modrinth.com/v2/search?query=${encodeURIComponent(query)}&limit=5`,
-    `search_${query}`,
+    `https://api.modrinth.com/v2/search?query=${encodeURIComponent(normalizedQuery)}&limit=${safeLimit}`,
+    `search_${normalizeNameForSearch(normalizedQuery)}_${safeLimit}`,
     modrinthHeaders(apiKey)
   )).hits || [];
 }
@@ -399,13 +404,109 @@ function betterMatch(hits, local) {
   const minTokens = Math.max(1, Math.min(2, queryTokens.length));
   if (best.score < 60 && best.tokenHits < minTokens) return null;
   return best.hit;
-}function chooseRecommended(channels, options) {
+}
+
+function tokenizeForFuzzy(value) {
+  return normalizeNameForSearch(value)
+    .split("-")
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3 && !/^\d+$/.test(token));
+}
+
+function rankFuzzyReplacementCandidates(hits, local = {}) {
+  if (!hits.length) return [];
+  const needleTokens = [...new Set([
+    ...(tokenizeForFuzzy(local.query || "")),
+    ...(tokenizeForFuzzy(local.slugGuess || "")),
+    ...(tokenizeForFuzzy(local.fileName || "")),
+    ...(tokenizeForFuzzy(local.displayName || "")),
+    ...(tokenizeForFuzzy(local.mod || ""))
+  ])];
+  if (!needleTokens.length) return [];
+
+  const scored = hits.map((hit) => {
+    const titleNorm = normalizeNameForSearch(hit?.title || "");
+    const slugNorm = normalizeNameForSearch(hit?.slug || "");
+    const descNorm = normalizeNameForSearch(hit?.description || "");
+    const projectType = String(hit?.project_type || "").toLowerCase();
+    let score = 0;
+    let tokenHits = 0;
+
+    if (projectType === "mod") score += 8;
+    else if (projectType) score -= 10;
+
+    for (const token of needleTokens) {
+      let matched = false;
+      if (slugNorm.includes(token)) { score += 12; matched = true; }
+      else if (titleNorm.includes(token)) { score += 10; matched = true; }
+      else if (descNorm.includes(token)) { score += 6; matched = true; }
+      if (matched) tokenHits += 1;
+    }
+
+    if (titleNorm === normalizeNameForSearch(local.query || "")) score += 22;
+    if (slugNorm === normalizeNameForSearch(local.query || "")) score += 24;
+    if (titleNorm.startsWith(normalizeNameForSearch(local.query || ""))) score += 8;
+    if (slugNorm.startsWith(normalizeNameForSearch(local.query || ""))) score += 10;
+
+    return { hit, score, tokenHits };
+  }).sort((a, b) => b.score - a.score);
+
+  const minTokenHits = Math.max(1, Math.min(2, needleTokens.length));
+  return scored
+    .filter((item) => item.tokenHits >= minTokenHits || item.score >= 28)
+    .slice(0, 8)
+    .map((item) => item.hit);
+}
+
+function chooseRecommended(channels, options) {
   if (options.includeAlpha && channels.alpha) return { data: channels.alpha, type: "alpha" };
   if (options.includeBeta && channels.beta) return { data: channels.beta, type: "beta" };
   if (channels.release) return { data: channels.release, type: "release" };
   if (options.includeBeta && channels.beta) return { data: channels.beta, type: "beta" };
   if (options.includeAlpha && channels.alpha) return { data: channels.alpha, type: "alpha" };
   return { data: null, type: null };
+}
+
+async function resolveRecommendedVersionForProject(projectId, detectedLoader, searchPath, options, modrinthApiKey) {
+  let latestRelease = null;
+  let latestBeta = null;
+  let latestAlpha = null;
+  let recommended = null;
+  let recommendedType = null;
+  let searchedVersion = null;
+  let recommendedFile = null;
+  const toCheck = searchPath.length ? searchPath : ["Unknown"];
+
+  for (const version of toCheck) {
+    try {
+      const versions = await modrinthVersions(projectId, detectedLoader, version, modrinthApiKey);
+      const channels = pickChannels(versions);
+      const rec = chooseRecommended(channels, options);
+      if (channels.release || channels.beta || channels.alpha) {
+        latestRelease = channels.release;
+        latestBeta = channels.beta;
+        latestAlpha = channels.alpha;
+        recommended = rec.data;
+        recommendedType = rec.type;
+        if (recommended) {
+          const files = Array.isArray(recommended.files) ? recommended.files : [];
+          recommendedFile = files.find((file) => file?.primary && file?.url) || files.find((file) => file?.url) || null;
+          searchedVersion = version;
+          if (recommendedFile?.url) break;
+        }
+      }
+    } catch {}
+  }
+
+  return {
+    latestRelease,
+    latestBeta,
+    latestAlpha,
+    recommended,
+    recommendedType,
+    searchedVersion,
+    recommendedFile
+  };
 }
 
 function decideStatus(installedVersion, recommendedVersion, sourceType, matchFound) {
@@ -426,69 +527,103 @@ function decideStatus(installedVersion, recommendedVersion, sourceType, matchFou
 
 async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options) {
   const modrinthApiKey = resolveApiKey(options, "modrinthApiKey");
-  const queryList = [...new Set([parsed.query, normalizeNameForSearch((parsed.fileName || "").replace(/\.jar$/i, ""))].filter(Boolean))];
+  const queryList = [...new Set([
+    parsed.query,
+    normalizeNameForSearch((parsed.fileName || "").replace(/\.jar$/i, "")),
+    normalizeNameForSearch(baseRow.displayName || baseRow.mod || "")
+  ].filter(Boolean))];
+
   let chosen = null;
+  let matchedQuery = parsed.query || "";
   for (const q of queryList) {
-    const hits = await modrinthSearch(q, modrinthApiKey);
+    const hits = await modrinthSearch(q, modrinthApiKey, 5);
     chosen = betterMatch(hits, { ...parsed, query: q });
     if (chosen) {
-      parsed.query = q;
+      matchedQuery = q;
       break;
     }
   }
 
-  let latestRelease = null;
-  let latestBeta = null;
-  let latestAlpha = null;
-  let recommended = null;
-  let recommendedType = null;
-  let searchedVersion = null;
-  let recommendedFile = null;
-
+  let resolution = {
+    latestRelease: null,
+    latestBeta: null,
+    latestAlpha: null,
+    recommended: null,
+    recommendedType: null,
+    searchedVersion: null,
+    recommendedFile: null
+  };
   if (chosen?.project_id) {
-    const toCheck = searchPath.length ? searchPath : ["Unknown"];
-    for (const version of toCheck) {
-      try {
-        const versions = await modrinthVersions(chosen.project_id, detectedLoader, version, modrinthApiKey);
-        const channels = pickChannels(versions);
-        const rec = chooseRecommended(channels, options);
-        if (channels.release || channels.beta || channels.alpha) {
-          latestRelease = channels.release;
-          latestBeta = channels.beta;
-          latestAlpha = channels.alpha;
-          recommended = rec.data;
-          recommendedType = rec.type;
-          if (recommended) {
-            const files = Array.isArray(recommended.files) ? recommended.files : [];
-            recommendedFile = files.find((file) => file?.primary && file?.url) || files.find((file) => file?.url) || null;
-            searchedVersion = version;
-            break;
-          }
-        }
-      } catch {}
-    }
+    resolution = await resolveRecommendedVersionForProject(chosen.project_id, detectedLoader, searchPath, options, modrinthApiKey);
   }
 
-  const matchFound = !!chosen && !!recommended && !!recommendedFile?.url;
-  const status = decideStatus(parsed.installedVersion, recommended?.version_number || recommended?.name, baseRow.sourceType, matchFound);
+  let fuzzyReplacementUsed = false;
+  let fuzzyCandidatesConsidered = 0;
+  let matchFound = !!chosen && !!resolution.recommended && !!resolution.recommendedFile?.url;
+
+  if ((!matchFound || !chosen) && options.fuzzyDescriptionReplacementSearch === true) {
+    const fuzzyPool = [];
+    const seenProjects = new Set(chosen?.project_id ? [chosen.project_id] : []);
+    for (const q of queryList.slice(0, 3)) {
+      const hits = await modrinthSearch(q, modrinthApiKey, 20);
+      for (const hit of hits) {
+        if (!hit?.project_id || seenProjects.has(hit.project_id)) continue;
+        seenProjects.add(hit.project_id);
+        fuzzyPool.push(hit);
+      }
+    }
+
+    const rankedFuzzy = rankFuzzyReplacementCandidates(fuzzyPool, {
+      ...parsed,
+      query: matchedQuery || queryList[0] || "",
+      displayName: baseRow.displayName || baseRow.mod || "",
+      mod: baseRow.mod || ""
+    });
+    fuzzyCandidatesConsidered = rankedFuzzy.length;
+
+    let replacementFound = false;
+    for (const candidate of rankedFuzzy.slice(0, 5)) {
+      const candidateResolution = await resolveRecommendedVersionForProject(candidate.project_id, detectedLoader, searchPath, options, modrinthApiKey);
+      if (candidateResolution.recommendedFile?.url) {
+        chosen = candidate;
+        resolution = candidateResolution;
+        fuzzyReplacementUsed = true;
+        replacementFound = true;
+        break;
+      }
+    }
+
+    if (!replacementFound && !chosen && rankedFuzzy.length) {
+      chosen = rankedFuzzy[0];
+      resolution = await resolveRecommendedVersionForProject(chosen.project_id, detectedLoader, searchPath, options, modrinthApiKey);
+      fuzzyReplacementUsed = true;
+    }
+
+    matchFound = !!chosen && !!resolution.recommended && !!resolution.recommendedFile?.url;
+  }
+
+  const status = decideStatus(parsed.installedVersion, resolution.recommended?.version_number || resolution.recommended?.name, baseRow.sourceType, matchFound);
   return {
     ...baseRow,
     provider: "modrinth",
     slugGuess: parsed.slugGuess,
     installedVersion: parsed.installedVersion,
-    query: parsed.query,
+    query: matchedQuery || parsed.query,
     matchFound,
     match: matchFound ? (chosen?.title || null) : null,
     slug: chosen?.slug || null,
-    url: recommendedFile?.url || null,
+    url: resolution.recommendedFile?.url || null,
     projectUrl: chosen?.slug ? `https://modrinth.com/mod/${chosen.slug}` : null,
-    recommendedFileName: recommendedFile?.filename || null,
-    latestRelease,
-    latestBeta,
-    latestAlpha,
-    recommended,
-    recommendedType,
-    searchedVersion,
+    recommendedFileName: resolution.recommendedFile?.filename || null,
+    lastUpdated: resolution.recommended?.date_published || resolution.recommendedFile?.date_published || null,
+    latestRelease: resolution.latestRelease,
+    latestBeta: resolution.latestBeta,
+    latestAlpha: resolution.latestAlpha,
+    recommended: resolution.recommended,
+    recommendedType: resolution.recommendedType,
+    searchedVersion: resolution.searchedVersion,
+    fuzzyReplacementUsed,
+    fuzzyCandidatesConsidered,
     status
   };
 }
@@ -616,6 +751,7 @@ async function scanEntries(entries, fileName, options = {}, progress = () => {})
       match: null,
       slug: null,
       url: null,
+      lastUpdated: null,
       latestRelease: null,
       latestBeta: null,
       latestAlpha: null,

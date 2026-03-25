@@ -18,7 +18,7 @@
 </head>
 <body>
   <h1>Roadmap</h1>
-  <div class="stamp">Last updated: March 24, 2026 (v0.3.0)</div>
+  <div class="stamp">Last updated: March 25, 2026 (v0.3.2)</div>
 
   <div class="card">
     <h2>What We Just Shipped</h2>
@@ -33,6 +33,11 @@
       <li>Folder scanning was reworked to avoid the 64MiB extension message limit by sending lightweight metadata instead of full payloads.</li>
       <li>API handling is now settings-first, with CurseForge and Modrinth keys managed directly in the Settings page.</li>
       <li>When CurseForge API is missing, scan output now says <code>ADD CURSEFORGE API</code> instead of <code>Unknown</code>.</li>
+      <li>Match links are now split into <code>Direct - Source</code> and <code>Site - Source</code> so direct download/export paths stay clean.</li>
+      <li>Results now include <code>Last Updated</code> controls with date filtering and <code>Newest/Oldest</code> sorting.</li>
+      <li>Header text filters now support multi-token input with semicolons (for example: <code>a;b;c</code>).</li>
+      <li>A new optional fuzzy replacement search can use mod descriptions to suggest better candidates on major version jumps.</li>
+      <li>When ignoring already-converted mods, panel flow now supports required two-pack comparison (Old + New) before running update search.</li>
     </ul>
   </div>
 

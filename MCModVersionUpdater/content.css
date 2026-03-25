@@ -161,6 +161,30 @@
   background: rgba(37,99,235,.18);
   border-color: #93c5fd;
 }
+.muc-dual-upload {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+.muc-dual-card {
+  border: 1px solid var(--muc-border);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(15, 23, 42, 0.45);
+}
+.muc-dual-title {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+}
+.muc-dual-status {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muc-muted);
+  min-height: 16px;
+  word-break: break-word;
+}
 .muc-progress-wrap { margin-top: 12px; display: none; }
 .muc-progress-wrap.active { display: block; }
 .muc-progress-label {
@@ -307,6 +331,18 @@
   font-weight: 700;
 }
 .muc-link:hover { text-decoration: underline; }
+.muc-link-secondary {
+  opacity: 0.95;
+  font-weight: 600;
+}
+.muc-match-cell {
+  min-width: 180px;
+}
+.muc-match-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .muc-small { font-size: 12px; }
 .muc-note {
   margin-top: 12px;
@@ -395,6 +431,13 @@
   margin-top: 6px;
   color: #4b5563;
   font-size: 12px;
+}
+
+.muc-overlay-filter-note {
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .muc-overlay-actions {
@@ -560,6 +603,11 @@
   padding: 6px 8px;
 }
 
+.muc-last-updated-controls {
+  display: grid;
+  gap: 6px;
+}
+
 .muc-head-filter {
   width: 100%;
   box-sizing: border-box;
@@ -617,6 +665,14 @@
   color: #1d4ed8;
 }
 
+#muc-root.muc-theme-light .muc-dual-card {
+  background: #f1f5ff;
+}
+
+#muc-root.muc-theme-light .muc-dual-title {
+  color: #1f2937;
+}
+
 #muc-overlay.muc-theme-dark .muc-sheets-card {
   background: #0f172a;
   color: #e5e7eb;
@@ -636,6 +692,7 @@
 
 #muc-overlay.muc-theme-dark .muc-overlay-file,
 #muc-overlay.muc-theme-dark .muc-overlay-meta,
+#muc-overlay.muc-theme-dark .muc-overlay-filter-note,
 #muc-overlay.muc-theme-dark .muc-no-match {
   color: #9ca3af;
 }
@@ -689,6 +746,10 @@
   border-color: #334155;
 }
 
+#muc-root.muc-theme-dark .muc-dual-card {
+  background: rgba(17, 24, 39, 0.75);
+}
+
 #muc-overlay.muc-theme-github-dark .muc-sheets-card {
   background: #0d1117;
   color: #c9d1d9;
@@ -708,6 +769,7 @@
 
 #muc-overlay.muc-theme-github-dark .muc-overlay-file,
 #muc-overlay.muc-theme-github-dark .muc-overlay-meta,
+#muc-overlay.muc-theme-github-dark .muc-overlay-filter-note,
 #muc-overlay.muc-theme-github-dark .muc-no-match {
   color: #8b949e;
 }
@@ -761,6 +823,11 @@
   border-color: #30363d;
 }
 
+#muc-root.muc-theme-github-dark .muc-dual-card {
+  background: rgba(13, 17, 23, 0.8);
+  border-color: #30363d;
+}
+
 #muc-root.muc-theme-snes-rainbow .muc-card {
   background:
     radial-gradient(120% 100% at 0% 0%, rgba(140, 138, 199, 0.26) 0%, rgba(140, 138, 199, 0) 55%),
@@ -803,6 +870,15 @@
   color: #e3e2ff;
 }
 
+#muc-root.muc-theme-snes-rainbow .muc-dual-card {
+  background: rgba(58, 54, 93, 0.68);
+  border-color: #5f5b85;
+}
+
+#muc-root.muc-theme-snes-rainbow .muc-dual-title {
+  color: #ecebff;
+}
+
 #muc-root.muc-theme-snes-rainbow .muc-source-chip {
   background: #343055;
   border-color: #5f5b85;
@@ -825,7 +901,8 @@
 
 #muc-overlay.muc-theme-snes-rainbow .muc-overlay-title,
 #muc-overlay.muc-theme-snes-rainbow .muc-overlay-file,
-#muc-overlay.muc-theme-snes-rainbow .muc-overlay-meta {
+#muc-overlay.muc-theme-snes-rainbow .muc-overlay-meta,
+#muc-overlay.muc-theme-snes-rainbow .muc-overlay-filter-note {
   color: #f3f2ff;
 }
 

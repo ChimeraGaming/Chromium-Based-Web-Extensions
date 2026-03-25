@@ -6,6 +6,9 @@ const defaults = {
   density: "comfortable",
   targetVersion: "",
   reverseCompatible: true,
+  fuzzyDescriptionReplacementSearch: false,
+  ignoreCurrentVersionMods: false,
+  onlyUpdatesCurrentSelected: false,
   theme: "light",
   curseforgeApiKey: "",
   modrinthApiKey: "",
@@ -88,6 +91,9 @@ function loadSettings() {
     document.getElementById("includeBeta").checked = items.includeBeta;
     document.getElementById("includeAlpha").checked = items.includeAlpha;
     document.getElementById("reverseCompatible").checked = items.reverseCompatible !== false;
+    document.getElementById("fuzzyDescriptionReplacementSearch").checked = items.fuzzyDescriptionReplacementSearch === true;
+    document.getElementById("ignoreCurrentVersionMods").checked = items.ignoreCurrentVersionMods === true;
+    document.getElementById("onlyUpdatesCurrentSelected").checked = items.onlyUpdatesCurrentSelected === true;
     document.getElementById("density").value = items.density || "comfortable";
     document.getElementById("theme").value = items.theme || "light";
     document.getElementById("curseforgeApiKey").value = items.curseforgeApiKey || "";
@@ -99,6 +105,9 @@ function loadSettings() {
 }
 
 function saveSettings() {
+  const ignoreCurrentVersionMods = document.getElementById("ignoreCurrentVersionMods").checked;
+  const onlyUpdatesCurrentSelected = document.getElementById("onlyUpdatesCurrentSelected").checked;
+
   const versionDb = sanitizeMinecraftVersionDatabase(document.getElementById("minecraftVersionDatabase").value
     .split("\n")
     .map((v) => v.trim())
@@ -113,6 +122,9 @@ function saveSettings() {
     includeBeta: document.getElementById("includeBeta").checked,
     includeAlpha: document.getElementById("includeAlpha").checked,
     reverseCompatible: document.getElementById("reverseCompatible").checked,
+    fuzzyDescriptionReplacementSearch: document.getElementById("fuzzyDescriptionReplacementSearch").checked,
+    ignoreCurrentVersionMods: onlyUpdatesCurrentSelected ? false : ignoreCurrentVersionMods,
+    onlyUpdatesCurrentSelected,
     targetVersion: normalizeLegacyVersion(document.getElementById("targetVersion").value),
     theme: document.getElementById("theme").value || "light",
     curseforgeApiKey: document.getElementById("curseforgeApiKey").value.trim(),
@@ -130,6 +142,19 @@ function saveSettings() {
   });
 }
 
+function bindExclusiveToggles() {
+  const ignoreNode = document.getElementById("ignoreCurrentVersionMods");
+  const updatesNode = document.getElementById("onlyUpdatesCurrentSelected");
+  if (!ignoreNode || !updatesNode) return;
+
+  ignoreNode.addEventListener("change", () => {
+    if (ignoreNode.checked) updatesNode.checked = false;
+  });
+  updatesNode.addEventListener("change", () => {
+    if (updatesNode.checked) ignoreNode.checked = false;
+  });
+}
+
 function clearCache() {
   chrome.storage.local.get(null, (items) => {
     const keys = Object.keys(items).filter((k) => k.startsWith("cache_"));
@@ -143,4 +168,5 @@ function clearCache() {
 
 document.getElementById("saveBtn").addEventListener("click", saveSettings);
 document.getElementById("clearCacheBtn").addEventListener("click", clearCache);
+bindExclusiveToggles();
 loadSettings();
