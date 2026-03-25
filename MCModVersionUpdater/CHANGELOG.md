@@ -5,6 +5,31 @@ All notable changes to this project are documented here.
 ---
 
 <details open>
+<summary><strong>Version 0.3.2</strong></summary>
+
+### Added
+- New optional setting: fuzzy description-based replacement search for better mod substitution suggestions during major version shifts
+- Two-link Match cell layout:
+  - `Direct - Source` (direct file URL, used by export)
+  - `Site - Source` (project/mod page URL, excluded from export)
+- New `Last Updated` controls:
+  - date filter
+  - `Newest` / `Oldest` sorting
+- Multi-token filter support using `;` separators in header text filters (OR matching)
+- New compare workflow when ignore-on-target mode is enabled:
+  - `Upload Old ZIP/Folder`
+  - `Upload New ZIP/Folder`
+  - `Search for Updates` is locked until both sides are selected
+
+### Changed
+- Filter note added under scan metadata to document multi-token filter syntax
+- Ignore-on-target flow now compares old pack results against new pack contents before final render/export
+
+</details>
+
+---
+
+<details>
 <summary><strong>Version 0.3.1</strong></summary>
 
 ### Added
