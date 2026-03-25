@@ -1,6 +1,6 @@
 # Mod Update Checker
 
-Version 0.3.0
+Version 0.3.2
 
 A Chromium-based extension that scans a Minecraft modpack ZIP or folder and helps identify which mods have compatible versions available for a target Minecraft version.
 
@@ -39,7 +39,7 @@ Instead of manually checking dozens or hundreds of mods, this tool gives you a c
   - Github (Dark)
   - SNES
 - JDownloader2 export:
-  - Uses direct links only from found versions
+  - Outputs `.meta4` (Metalink v4) from found direct links
   - Respects active filters
   - Prompts for filename before saving
 
@@ -100,7 +100,7 @@ Planned improvements include:
 4. Choose or enter a target Minecraft version.
 5. Upload a ZIP or folder.
 6. Review and filter results.
-7. Export links for JDownloader2 if needed.
+7. Export `.meta4` for JDownloader2 if needed.
 
 ---
 
@@ -117,13 +117,18 @@ Planned improvements include:
 
 Active development.
 
-Version 0.3.0 introduces:
+Version 0.3.2 introduces:
 
-- Mode-aware `Upgradable` and `Downgradable` result column
-- Filter-aware JDownloader2 export with filename prompt
-- Folder scan payload improvements to avoid extension message size errors
-- Settings simplification and settings-only API key handling
-- Theme system expansion and refinement
+- Fuzzy description-based replacement search (optional setting)
+- Two-pack compare flow for ignore-on-target mode:
+  - Upload old pack
+  - Upload new pack
+  - Search updates only after both are selected
+- Match column split links:
+  - `Direct - Source` for downloadable files (used by `.meta4` export)
+  - `Site - Source` for mod/project pages (excluded from export)
+- `Last Updated` filter + ascending/descending sort controls
+- Header filter token support with `;` for OR-style matching
 
 For detailed release history, see [CHANGELOG.md](./CHANGELOG.md).
 
