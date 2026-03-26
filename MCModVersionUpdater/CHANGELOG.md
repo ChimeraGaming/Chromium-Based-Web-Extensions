@@ -5,28 +5,60 @@ All notable changes to this project are documented here.
 ---
 
 <details open>
-<summary><strong>Version 1.x</strong></summary>
+<summary><strong>Version 2.x</strong></summary>
 
 <details open>
+<summary><strong>Version 2.0</strong></summary>
+
+### Added
+- New scan mode: `Attempt to update mod (Fabric only)`.
+- Main panel info bubbles for `Scan mode` and `Target Minecraft version`.
+- Filter-aware `Download All` action for direct matched links.
+- Source count indicator in the panel and settings.
+
+### Changed
+- Large UI cleanup across panel and settings.
+- Main panel is draggable and auto closes after successful scans.
+- Scan mode flow simplified into clearer mode names.
+- Main scan upload was condensed to one `Upload ZIP/Folder` button with ZIP and Folder picker.
+- Compare mode upload sections were cleaned up and organized side by side.
+- Theme behavior and settings layout were refined for consistency.
+- Additional Sources section now matches the stacked layout used in other settings sections.
+
+### Fixed
+- Compare mode identity filtering now keeps valid rows instead of over-filtering.
+- Fabric update mode now resolves the minimum available Fabric Loader version correctly for the target game version.
+- Close button size and placement no longer cut into long panel titles.
+- Corrected `1.26` references to `26.1`.
+- Export output remains `.meta4` and respects active filters.
+
+</details>
+
+</details>
+
+<details>
+<summary><strong>Version 1.x</strong></summary>
+
+<details>
 <summary><strong>Version 1.0.0</strong></summary>
 
 ### Changed
-- Promoted the extension to the `1.0.0` stable release line
+- Promoted the extension to the `1.0.0` stable release line.
 - Moved advanced runtime toggles to the Settings page for a cleaner in-page panel:
   - reverse search
   - fuzzy replacement search
   - ignore current-target mods
   - only updates on current-target mods
-- Moved Theme selection to Settings-only while keeping live theme updates on save
+- Moved theme selection to Settings-only while keeping live theme updates on save.
 
 ### Improved
 - Match column now clearly separates links:
   - `Direct - Source` for exportable file links
-  - `Site - Source` for project pages (excluded from export)
-- Results filtering now supports `;` token lists and Last Updated sort direction control
+  - `Site - Source` for project pages excluded from export
+- Results filtering supports `;` token lists and Last Updated sort direction control.
 
 ### Refined
-- Removed redundant legacy script `content_display_filename.js` (unused by manifest and no remaining references)
+- Removed legacy script `content_display_filename.js` with no remaining runtime references.
 
 </details>
 
@@ -41,22 +73,22 @@ All notable changes to this project are documented here.
 <summary><strong>Version 0.3.2</strong></summary>
 
 ### Added
-- New optional setting: fuzzy description-based replacement search for better mod substitution suggestions during major version shifts
-- Two-link Match cell layout:
-  - `Direct - Source` (direct file URL, used by export)
-  - `Site - Source` (project/mod page URL, excluded from export)
-- New `Last Updated` controls:
+- Optional setting for fuzzy description-based replacement search.
+- Two-link Match layout:
+  - `Direct - Source`
+  - `Site - Source`
+- New Last Updated controls:
   - date filter
-  - `Newest` / `Oldest` sorting
-- Multi-token filter support using `;` separators in header text filters (OR matching)
-- New compare workflow when ignore-on-target mode is enabled:
-  - `Upload Old ZIP/Folder`
-  - `Upload New ZIP/Folder`
-  - `Search for Updates` is locked until both sides are selected
+  - `Newest` and `Oldest` sorting
+- Header filters support `;` multi-token OR matching.
+- Compare workflow for ignore-on-target mode:
+  - old pack upload
+  - new pack upload
+  - gated search once both are selected
 
 ### Changed
-- Filter note added under scan metadata to document multi-token filter syntax
-- Ignore-on-target flow now compares old pack results against new pack contents before final render/export
+- Added filter syntax note under scan metadata.
+- Ignore-on-target flow compares old pack rows against new pack rows before render and export.
 
 </details>
 
@@ -64,40 +96,38 @@ All notable changes to this project are documented here.
 <summary><strong>Version 0.3.1</strong></summary>
 
 ### Added
-- Added extension icons across required sizes and manifest mappings
+- Added extension icons with manifest mappings.
 
 ### Fixed
-- Corrected all `1.26` references to `26.1`
-- Fixed upgrade logic to properly follow target-version matching behavior
-- Fixed export file conversion
+- Corrected `1.26` references to `26.1`.
+- Fixed upgrade logic for strict target-version matching.
+- Fixed export file conversion.
 
 </details>
 
 <details>
-<summary><strong>Version 0.3.0 </strong></summary>
+<summary><strong>Version 0.3.0</strong></summary>
 
 ### Added
-- Mode-aware recommendation column in results:
+- Mode-aware recommendation column:
   - `Upgradable` in Upgrade mode
   - `Downgradable` in Downgrade mode
-- Header-level table filters for quick narrowing during review
-- Filename prompt before export so users can name files before download
-- Optional Modrinth API key input in Settings
+- Header-level table filters.
+- Filename prompt before export save.
+- Optional Modrinth API key in settings.
 
 ### Changed
-- Export flow is now JDownloader2-focused:
-  - outputs `.meta4` (Metalink v4) using found direct download links
-  - respects currently active filters
-- Folder scanning now sends lightweight metadata payloads to avoid Chrome extension message size limits (64MiB class failures)
-- API key handling is now settings-only (removed file-based fallback config)
-- SNES theme naming and styling pass updated (`SNES`)
-- Settings page simplified by removing redundant or unused controls
-- Roadmap and release docs updated for current workflow
+- Export flow moved to JDownloader2 `.meta4`.
+- Export uses found direct links and respects active filters.
+- Folder scanning sends compact metadata payloads to avoid extension message size failures.
+- API keys moved to settings-only handling.
+- Theme naming updated to `SNES`.
+- Settings page cleaned to remove redundant controls.
 
 ### Fixed
-- Roadmap and Settings open behavior from injected panel context
-- CurseForge missing-key clarity:
-  - `Unknown` now replaced with `ADD CURSEFORGE API` where applicable
+- Roadmap and settings open behavior from panel context.
+- Missing CurseForge key clarity:
+  - `Unknown` replaced with `ADD CURSEFORGE API` where applicable
 
 </details>
 
@@ -105,23 +135,19 @@ All notable changes to this project are documented here.
 <summary><strong>Version 0.2.0</strong></summary>
 
 ### Added
-- Upgrade mode for streamlined mod version transitions
-- Fully integrated Roadmap page accessible from all UI entry points
-- Refined navigation structure for a more intuitive workflow
-- Simplified and cleaner settings experience
+- Upgrade mode for streamlined mod version transitions.
+- Integrated roadmap page from all extension entry points.
+- Simplified navigation and settings flow.
 
 ### Improved
-- Enhanced source display to show only relevant providers
-- Optimized UI layout across popup and injected panel
-- Consistent navigation behavior across all extension views
-- Improved handling of duplicate mod entries
-- Enhanced scrollbar visibility and interaction
+- Cleaner source display.
+- Better UI layout consistency.
+- Improved duplicate handling.
+- Improved scrollbar visibility.
 
 ### Refined
-- Reduced unnecessary dependencies and background logic
-- Streamlined script structure for better maintainability
-- Cleaned manifest configuration for a lighter footprint
-- Removed redundant or unused components
+- Reduced unnecessary dependencies and background logic.
+- Streamlined script structure and manifest.
 
 </details>
 
@@ -129,20 +155,13 @@ All notable changes to this project are documented here.
 <summary><strong>Version 0.1.0</strong></summary>
 
 ### Added
-- Initial extension architecture using Manifest v3
-- Modpack ZIP parsing and analysis system
-- Filename based mod detection
-- Version comparison engine
-- Integration with CurseForge and Modrinth sources
-- Structured results table including:
-  - Mod Name
-  - Current Version
-  - Target Version
-  - Match Status
-  - Source
-- Popup interface and injected panel UI
-- Settings page
-- Roadmap page
+- Initial Manifest v3 extension architecture.
+- Modpack ZIP parsing and analysis.
+- Filename-based mod detection.
+- Version comparison engine.
+- CurseForge and Modrinth integration.
+- Structured results table and panel UI.
+- Settings and roadmap pages.
 
 </details>
 
