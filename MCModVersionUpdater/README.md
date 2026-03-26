@@ -1,93 +1,101 @@
 # Mod Update Checker
 
-Version 0.3.2
+Version 2.0
 
-A Chromium-based extension that scans a Minecraft modpack ZIP or folder and helps identify which mods have compatible versions available for a target Minecraft version.
+A Chromium-based extension that scans Minecraft modpacks and helps map mods to a selected target Minecraft version.
 
-Built to reduce friction when upgrading or downgrading modpacks between versions.
+Built to speed up upgrade, downgrade, compare, duplicate, and targeted update workflows.
 
 ---
 
 ## Overview
 
-Mod Update Checker analyzes your pack and compares each mod against available versions from supported sources like CurseForge and Modrinth.
+Mod Update Checker analyzes ZIPs and folders, then compares each mod against supported sources.
 
-Instead of manually checking dozens or hundreds of mods, this tool gives you a clear, structured view of:
+The results table shows:
 
-- What version you currently have
-- What version exists for your target Minecraft version
-- Whether a valid match was found
-- Whether a mod is upgradable or downgradable in the active mode
-- Where the match came from
+- Mod name
+- Current version
+- Selected version
+- Match status
+- Upgradable or Downgradable state by mode
+- Last updated date
+- Direct and site links
 
 ---
 
 ## Core Features
 
-- Upload or drag and drop a modpack ZIP
-- Upload a full modpack folder (large folder handling improved)
-- Automatically parses:
-  - `manifest.json`
-  - `modrinth.index.json`
-  - `modlist.html`
-- Detects current mod versions from filenames and manifest metadata
-- Supports target Minecraft version matching with reverse-compatible search
-- Displays results in a structured table with header-level filters
+- Single upload button with ZIP and Folder picker
+- Header filters with multi-token `;` matching
+- Last Updated filter plus newest and oldest sort
+- Match links split into:
+  - `Direct - Source` for downloads and export
+  - `Site - Source` for project pages
+- Export to `.meta4` for JDownloader2
+- `Download All` for filtered direct links
 - Theme support:
   - Light
   - Dark
   - Github (Dark)
   - SNES
-- JDownloader2 export:
-  - Outputs `.meta4` (Metalink v4) from found direct links
-  - Respects active filters
-  - Prompts for filename before saving
+- Draggable in-page panel that auto closes after successful scans
 
 ---
 
-## Modes
+## Scan Modes
 
-### Upgrade
-Scan mods and find available updates for a newer Minecraft version.
+- `Upgrade Current Pack`
+- `Downgrade Current Pack`
+- `Missing Mods (Compare Old and New)`
+- `Check for Updates`
+- `Duplicate Check`
+- `Attempt to update mod (Fabric only)`
 
-### Downgrade
-Scan mods and find compatible versions for an older Minecraft version.
+---
+
+## Attempt To Update Mod (Fabric Only)
+
+This mode takes one Fabric JAR and:
+
+- Opens the archive
+- Locates `fabric.mod.json` or `fabric.mod.jsonm`
+- Updates `minecraft` dependency to the selected target version
+- Updates Fabric Loader dependency using the minimum available loader for the target version
+- Rebuilds the JAR and prompts for output filename
 
 ---
 
 ## Settings
 
-- Use detected source version or manually define target version
-- Toggle backward search if no results are found
-- Include or exclude beta and alpha recommendations
-- Configure table density and theme
-- Set API keys from Settings:
-  - `CurseForge API key` for CurseForge metadata lookups
-  - `Modrinth API key` for optional authenticated Modrinth requests
+- Target Minecraft version database
+- Search mode default
+- Reverse search toggle
+- Include beta and alpha toggles
+- Fuzzy replacement search toggle
+- Theme and table density
+- Additional Sources list
+- Prefer Additional Sources toggle
+- API keys:
+  - CurseForge API key
+  - Modrinth API key optional
 
 ---
 
-## Roadmap
+## Additional Sources
 
-Accessible directly from the extension UI.
+Additional Sources can be added one URL per line.
 
-Planned improvements include:
-
-- Additional source support (GitHub and curated custom repos)
-- Smarter filename-to-project matching
-- Better cross-loader version resolution (Fabric, Forge, Quilt, NeoForge)
-- Dependency-aware warnings before export
-- Manual match correction flow for edge cases
-- Optional rebuild flow after review
+If `Prefer Additional Sources over Modrinth/CurseForge` is enabled, those sources are checked first and fallback sources are used only when no match is found.
 
 ---
 
 ## Installation
 
 1. Download or clone this repository.
-2. Open Chrome and go to `chrome://extensions`.
+2. Open `chrome://extensions`.
 3. Enable Developer Mode.
-4. Click **Load unpacked**.
+4. Click `Load unpacked`.
 5. Select the extension folder.
 
 ---
@@ -95,52 +103,40 @@ Planned improvements include:
 ## Usage
 
 1. Open Modrinth or CurseForge.
-2. Open the extension panel.
-3. Select mode: Upgrade or Downgrade.
-4. Choose or enter a target Minecraft version.
-5. Upload a ZIP or folder.
+2. Open the panel.
+3. Select scan mode.
+4. Select target Minecraft version.
+5. Upload ZIP or Folder.
 6. Review and filter results.
-7. Export `.meta4` for JDownloader2 if needed.
+7. Export `.meta4` or use `Download All`.
 
 ---
 
 ## Notes
 
-- This tool helps discovery and does not guarantee full modpack compatibility.
-- Some mods may not have versions available for your target.
-- If CurseForge API is not set, CurseForge-based version rows can show `ADD CURSEFORGE API`.
-- Current version database includes `26.1` and stable historical versions.
+- This tool assists discovery and matching. It does not guarantee full pack compatibility.
+- Some mods may not have files for the selected target version.
+- If CurseForge API is not configured, CurseForge rows can show `ADD CURSEFORGE API`.
+- Version `26.1` is included in the default version database.
+- If you want something added, please open a GitHub issue.
 
 ---
 
-## Project Status
+## Release Status
 
-Active development.
+Current stable release: `2.0`
 
-Version 0.3.2 introduces:
-
-- Fuzzy description-based replacement search (optional setting)
-- Two-pack compare flow for ignore-on-target mode:
-  - Upload old pack
-  - Upload new pack
-  - Search updates only after both are selected
-- Match column split links:
-  - `Direct - Source` for downloadable files (used by `.meta4` export)
-  - `Site - Source` for mod/project pages (excluded from export)
-- `Last Updated` filter + ascending/descending sort controls
-- Header filter token support with `;` for OR-style matching
-
-For detailed release history, see [CHANGELOG.md](./CHANGELOG.md).
+For full release history, see [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
 ## License
 
-See LICENSE file for details.
+See `LICENSE`.
 
 ---
 
 ## Author
 
-ChimeraGaming
+ChimeraGaming  
 GitHub: https://github.com/ChimeraGaming
