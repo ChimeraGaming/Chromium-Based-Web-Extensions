@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Mod Update Checker",
-  "version": "1.0.0",
+  "version": "2.0",
   "description": "Scan CurseForge or Modrinth modpack ZIPs, target a Minecraft version for conversion, compare mod availability, and open saved fallback searches.",
   "permissions": ["storage"],
   "host_permissions": [
@@ -9,6 +9,7 @@
     "https://api.modrinth.com/*",
     "https://www.curseforge.com/*",
     "https://api.curseforge.com/*",
+    "https://meta.fabricmc.net/*",
     "https://github.com/*",
     "https://api.github.com/*"
   ],

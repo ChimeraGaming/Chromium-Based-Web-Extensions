@@ -30,12 +30,21 @@
 .muc-card {
   width: 430px;
   padding: 16px;
+  cursor: grab;
+}
+.muc-card.muc-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+.muc-card.muc-dragging * {
+  user-select: none;
 }
 .muc-title {
   font-size: 28px;
   font-weight: 800;
   margin-bottom: 8px;
   line-height: 1.05;
+  padding-right: 44px;
 }
 .muc-text {
   font-size: 13px;
@@ -48,7 +57,7 @@
   gap: 8px;
   flex-wrap: wrap;
 }
-.muc-mode-row { margin-bottom: 8px; }
+.muc-mode-row { margin-top: 12px; margin-bottom: 8px; }
 .muc-source-row { margin-top: 12px; }
 .muc-btn {
   background: #1e293b;
@@ -74,6 +83,31 @@
   border-color: #2563eb;
 }
 .muc-btn:disabled { opacity: .65; cursor: default; }
+.muc-upload-picker {
+  position: relative;
+  display: inline-flex;
+}
+.muc-upload-picker-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--muc-border);
+  background: #111827;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+  z-index: 8;
+}
+.muc-upload-picker-menu[hidden] {
+  display: none;
+}
+.muc-upload-picker-menu .muc-btn {
+  padding: 7px 11px;
+  font-size: 12px;
+  white-space: nowrap;
+}
 .muc-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -88,6 +122,89 @@
 .muc-label {
   font-size: 12px;
   color: #cbd5e1;
+}
+.muc-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+.muc-info-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.muc-info-btn {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--muc-border);
+  background: #1f2937;
+  color: #bfdbfe;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.muc-info-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  width: min(320px, calc(100vw - 56px));
+  display: none;
+  z-index: 22;
+  border: 1px solid var(--muc-border);
+  border-radius: 10px;
+  background: #111827;
+  box-shadow: 0 12px 26px rgba(0,0,0,.38);
+  padding: 10px 12px;
+  --muc-info-sep: rgba(148, 163, 184, 0.35);
+}
+.muc-info-wrap:hover .muc-info-pop {
+  display: block;
+}
+.muc-info-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #dbeafe;
+  margin-bottom: 6px;
+}
+.muc-info-line {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin-top: 0;
+}
+.muc-info-line + .muc-info-line {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--muc-info-sep);
+}
+.muc-info-item {
+  margin-top: 0;
+}
+.muc-info-item + .muc-info-item {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--muc-info-sep);
+}
+.muc-info-mode {
+  font-size: 11px;
+  font-weight: 700;
+  color: #dbeafe;
+  line-height: 1.35;
+}
+.muc-info-desc {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.4;
 }
 .muc-input, .muc-select {
   width: 100%;
@@ -147,20 +264,6 @@
 .muc-switch input:checked + .muc-slider:before {
   transform: translateX(20px);
 }
-.muc-dropzone {
-  margin-top: 12px;
-  border: 1px dashed var(--muc-accent-2);
-  border-radius: 14px;
-  padding: 14px;
-  text-align: center;
-  color: #bfdbfe;
-  font-size: 13px;
-  background: rgba(37,99,235,.08);
-}
-.muc-dropzone.drag {
-  background: rgba(37,99,235,.18);
-  border-color: #93c5fd;
-}
 .muc-dual-upload {
   margin-top: 12px;
   display: grid;
@@ -171,6 +274,23 @@
   border-radius: 12px;
   padding: 10px;
   background: rgba(15, 23, 42, 0.45);
+}
+.muc-compare-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+.muc-compare-block {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.muc-compare-divider {
+  width: 1px;
+  height: 100%;
+  border-left: 1px solid var(--muc-border);
+  opacity: 0.8;
 }
 .muc-dual-title {
   font-size: 12px;
@@ -184,6 +304,23 @@
   color: var(--muc-muted);
   min-height: 16px;
   word-break: break-word;
+}
+.muc-duplicate-upload {
+  margin-top: 10px;
+}
+.muc-duplicate-upload .muc-dual-card {
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.muc-duplicate-upload .muc-dual-title {
+  margin-bottom: 6px;
+}
+.muc-duplicate-upload .muc-actions {
+  gap: 6px;
+}
+.muc-duplicate-upload .muc-btn {
+  padding: 7px 11px;
+  font-size: 12px;
 }
 .muc-progress-wrap { margin-top: 12px; display: none; }
 .muc-progress-wrap.active { display: block; }
@@ -359,6 +496,18 @@
   .muc-card { width: min(430px, calc(100vw - 24px)); }
 }
 
+@media (max-width: 520px) {
+  .muc-compare-card {
+    grid-template-columns: 1fr;
+  }
+  .muc-compare-divider {
+    width: 100%;
+    height: 0;
+    border-left: 0;
+    border-top: 1px solid var(--muc-border);
+  }
+}
+
 
 .muc-card {
   position: relative;
@@ -366,15 +515,15 @@
 
 .muc-panel-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 34px;
-  height: 34px;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 999px;
   background: #b91c1c;
   color: #fff;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -659,10 +808,32 @@
   border-color: #cbd5e1;
 }
 
-#muc-root.muc-theme-light .muc-dropzone {
-  background: rgba(37, 99, 235, 0.06);
-  border-color: #60a5fa;
+#muc-root.muc-theme-light .muc-info-btn {
+  background: #ffffff;
   color: #1d4ed8;
+  border-color: #cbd5e1;
+}
+
+#muc-root.muc-theme-light .muc-info-pop {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  --muc-info-sep: rgba(100, 116, 139, 0.35);
+}
+
+#muc-root.muc-theme-light .muc-info-title {
+  color: #1f2937;
+}
+
+#muc-root.muc-theme-light .muc-info-line {
+  color: #4b5563;
+}
+
+#muc-root.muc-theme-light .muc-info-mode {
+  color: #1f2937;
+}
+
+#muc-root.muc-theme-light .muc-info-desc {
+  color: #4b5563;
 }
 
 #muc-root.muc-theme-light .muc-dual-card {
@@ -671,6 +842,11 @@
 
 #muc-root.muc-theme-light .muc-dual-title {
   color: #1f2937;
+}
+
+#muc-root.muc-theme-light .muc-upload-picker-menu {
+  background: #ffffff;
+  border-color: #cbd5e1;
 }
 
 #muc-overlay.muc-theme-dark .muc-sheets-card {
@@ -828,6 +1004,11 @@
   border-color: #30363d;
 }
 
+#muc-root.muc-theme-github-dark .muc-upload-picker-menu {
+  background: #0d1117;
+  border-color: #30363d;
+}
+
 #muc-root.muc-theme-snes-rainbow .muc-card {
   background:
     radial-gradient(120% 100% at 0% 0%, rgba(140, 138, 199, 0.26) 0%, rgba(140, 138, 199, 0) 55%),
@@ -864,10 +1045,16 @@
   color: #ecebff;
 }
 
-#muc-root.muc-theme-snes-rainbow .muc-dropzone {
-  background: rgba(143, 138, 203, 0.18);
-  border-color: #8f8acb;
-  color: #e3e2ff;
+#muc-root.muc-theme-snes-rainbow .muc-info-btn {
+  background: #3a365d;
+  border-color: #5f5b85;
+  color: #ecebff;
+}
+
+#muc-root.muc-theme-snes-rainbow .muc-info-pop {
+  background: #302c57;
+  border-color: #5f5b85;
+  --muc-info-sep: rgba(172, 168, 229, 0.35);
 }
 
 #muc-root.muc-theme-snes-rainbow .muc-dual-card {
@@ -877,6 +1064,11 @@
 
 #muc-root.muc-theme-snes-rainbow .muc-dual-title {
   color: #ecebff;
+}
+
+#muc-root.muc-theme-snes-rainbow .muc-upload-picker-menu {
+  background: #302c57;
+  border-color: #5f5b85;
 }
 
 #muc-root.muc-theme-snes-rainbow .muc-source-chip {

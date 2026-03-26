@@ -9,6 +9,7 @@ const DEFAULT_OPTIONS = {
   onlyUpdatesCurrentSelected: false,
   curseforgeApiKey: "",
   modrinthApiKey: "",
+  preferAdditionalSources: false,
   additionalSourceUrls: [],
   minecraftVersionDatabase: [
     "26.1",
@@ -328,6 +329,177 @@ async function modrinthVersions(projectId, loader, gameVersion, apiKey) {
   );
 }
 
+function parseGithubRepoUrl(url) {
+  try {
+    const parsed = new URL(String(url || "").trim());
+    if (!parsed.hostname.toLowerCase().includes("github.com")) return null;
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (parts.length < 2) return null;
+    return {
+      owner: parts[0],
+      repo: parts[1].replace(/\.git$/i, "")
+    };
+  } catch {
+    return null;
+  }
+}
+
+function additionalGithubRepos(urls) {
+  const seen = new Set();
+  const repos = [];
+  for (const url of (urls || [])) {
+    const repo = parseGithubRepoUrl(url);
+    if (!repo) continue;
+    const key = `${repo.owner}/${repo.repo}`.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    repos.push(repo);
+  }
+  return repos;
+}
+
+function tokenizeSearchValue(value) {
+  return normalizeNameForSearch(value)
+    .split("-")
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 2 && !/^\d+$/.test(token));
+}
+
+function fileNameMentionsVersion(fileName, targetVersion) {
+  const target = normalizeLegacyVersion(String(targetVersion || "").trim());
+  if (!target || target === "Unknown") return false;
+  const lower = String(fileName || "").toLowerCase();
+  if (!lower) return false;
+  const compact = target.replace(/\./g, "");
+  const dashed = target.replace(/\./g, "-");
+  const underscored = target.replace(/\./g, "_");
+  const tokens = [
+    target,
+    compact,
+    dashed,
+    underscored,
+    `mc${target}`,
+    `mc${compact}`,
+    `mc-${dashed}`,
+    `mc_${underscored}`,
+    `minecraft${target}`,
+    `minecraft-${dashed}`,
+    `minecraft_${underscored}`
+  ].filter(Boolean);
+  return tokens.some((token) => lower.includes(token));
+}
+
+function githubRawDownloadUrl(htmlUrl) {
+  const match = String(htmlUrl || "").match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i);
+  if (!match) return null;
+  const owner = match[1];
+  const repo = match[2];
+  const ref = match[3];
+  const path = match[4];
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${path}`;
+}
+
+async function githubSearchRepoCode(repo, query) {
+  const searchQuery = [query, `repo:${repo.owner}/${repo.repo}`, "extension:jar"]
+    .filter(Boolean)
+    .join(" ");
+  const key = `gh_code_${normalizeNameForSearch(`${repo.owner}_${repo.repo}_${query || "none"}`)}`;
+  try {
+    const data = await cachedFetchJson(
+      `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}&per_page=20`,
+      key,
+      { "Accept": "application/vnd.github+json" }
+    );
+    return Array.isArray(data?.items) ? data.items : [];
+  } catch {
+    return [];
+  }
+}
+
+function scoreGithubJarResult(item, query, strictTargetVersion) {
+  const path = String(item?.path || "");
+  const fileName = path.split("/").pop() || "";
+  const normalizedPath = normalizeNameForSearch(path);
+  const tokens = tokenizeSearchValue(query);
+  const tokenHits = tokens.filter((token) => normalizedPath.includes(token)).length;
+
+  let score = tokenHits * 10;
+  if (path.toLowerCase().includes("/mods/")) score += 8;
+  if (path.toLowerCase().includes("release")) score += 4;
+  if (strictTargetVersion) {
+    if (fileNameMentionsVersion(fileName, strictTargetVersion)) score += 60;
+    else score -= 30;
+  }
+  return { score, tokenHits, fileName };
+}
+
+async function findPreferredAdditionalMatch(queryList, searchPath, additionalSourceUrls) {
+  const repos = additionalGithubRepos(additionalSourceUrls);
+  if (!repos.length) return null;
+
+  const strictTargetVersion = (searchPath || [])
+    .map((version) => normalizeLegacyVersion(version))
+    .find((version) => version && version !== "Unknown") || "";
+
+  const queries = [...new Set((queryList || []).filter(Boolean))].slice(0, 3);
+  if (!queries.length) queries.push("");
+
+  const candidates = [];
+  const seen = new Set();
+
+  for (const repo of repos) {
+    for (const query of queries) {
+      const hits = await githubSearchRepoCode(repo, query);
+      for (const item of hits) {
+        const htmlUrl = String(item?.html_url || "").trim();
+        if (!htmlUrl || seen.has(htmlUrl)) continue;
+        seen.add(htmlUrl);
+        const directUrl = githubRawDownloadUrl(htmlUrl);
+        if (!directUrl) continue;
+        const scored = scoreGithubJarResult(item, query, strictTargetVersion);
+        if (strictTargetVersion && !fileNameMentionsVersion(scored.fileName, strictTargetVersion)) continue;
+        candidates.push({
+          repo,
+          query,
+          item,
+          directUrl,
+          fileName: scored.fileName,
+          score: scored.score,
+          tokenHits: scored.tokenHits
+        });
+      }
+    }
+  }
+
+  if (!candidates.length) return null;
+
+  candidates.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const aUpdated = Date.parse(a.item?.repository?.updated_at || "") || 0;
+    const bUpdated = Date.parse(b.item?.repository?.updated_at || "") || 0;
+    if (bUpdated !== aUpdated) return bUpdated - aUpdated;
+    return a.fileName.localeCompare(b.fileName, undefined, { sensitivity: "base" });
+  });
+
+  const chosen = candidates[0];
+  if (!chosen) return null;
+
+  const projectUrl = `https://github.com/${chosen.repo.owner}/${chosen.repo.repo}`;
+  const inferredVersion = strictTargetVersion || extractMinecraftVersionFromFilename(chosen.fileName);
+  return {
+    provider: "github",
+    projectId: `${chosen.repo.owner}/${chosen.repo.repo}`,
+    query: chosen.query,
+    match: chosen.fileName.replace(/\.jar$/i, ""),
+    slug: normalizeNameForSearch(`${chosen.repo.owner}-${chosen.repo.repo}`),
+    url: chosen.directUrl,
+    projectUrl,
+    recommendedFileName: chosen.fileName,
+    lastUpdated: chosen.item?.repository?.updated_at || null,
+    searchedVersion: inferredVersion || null
+  };
+}
+
 
 async function curseforgeFetch(path, apiKey) {
   if (!apiKey) return null;
@@ -351,6 +523,210 @@ async function curseforgeGetMod(projectId, apiKey) {
 async function curseforgeGetFile(projectId, fileId, apiKey) {
   if (!projectId || !fileId) return null;
   return await curseforgeFetch(`/v1/mods/${encodeURIComponent(projectId)}/files/${encodeURIComponent(fileId)}`, apiKey);
+}
+
+async function curseforgeGetFiles(projectId, apiKey, pageSize = 50) {
+  if (!projectId) return [];
+  const safePageSize = Math.max(1, Math.min(50, Number(pageSize) || 50));
+  const data = await curseforgeFetch(`/v1/mods/${encodeURIComponent(projectId)}/files?pageSize=${safePageSize}`, apiKey);
+  return Array.isArray(data) ? data : [];
+}
+
+async function curseforgeSearchMods(query, apiKey, pageSize = 12) {
+  const q = String(query || "").trim();
+  if (!q) return [];
+  const safePageSize = Math.max(1, Math.min(50, Number(pageSize) || 12));
+  const data = await curseforgeFetch(
+    `/v1/mods/search?gameId=432&classId=6&pageSize=${safePageSize}&searchFilter=${encodeURIComponent(q)}`,
+    apiKey
+  );
+  return Array.isArray(data) ? data : [];
+}
+
+function curseforgeFileType(file) {
+  const rt = Number(file?.releaseType || 1);
+  if (rt === 2) return "beta";
+  if (rt === 3) return "alpha";
+  return "release";
+}
+
+function curseforgeFileDate(file) {
+  const raw = String(file?.fileDate || file?.dateModified || "");
+  const parsed = Date.parse(raw);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function curseforgeSupportsLoader(file, detectedLoader) {
+  const versions = Array.isArray(file?.gameVersions)
+    ? file.gameVersions.map((v) => String(v || "").toLowerCase())
+    : [];
+  const loader = String(detectedLoader || "").trim().toLowerCase();
+  if (!loader || loader === "unknown") return true;
+  if (loader === "fabric") return versions.some((v) => v.includes("fabric"));
+  if (loader === "quilt") return versions.some((v) => v.includes("quilt"));
+  if (loader === "neoforge") return versions.some((v) => v.includes("neoforge") || v.includes("neo forge") || v.includes("neo-forge"));
+  if (loader === "forge") return versions.some((v) => v.includes("forge") && !v.includes("neoforge") && !v.includes("neo forge") && !v.includes("neo-forge"));
+  return true;
+}
+
+function curseforgeSupportsTargetVersion(file, gameVersion) {
+  const target = normalizeLegacyVersion(gameVersion || "");
+  if (!target || target === "Unknown") return true;
+  const versions = Array.isArray(file?.gameVersions) ? file.gameVersions : [];
+  return versions.some((v) => normalizeLegacyVersion(v) === target);
+}
+
+function chooseCurseforgeRecommended(files, options) {
+  const sorted = [...files].sort((a, b) => curseforgeFileDate(b) - curseforgeFileDate(a));
+  const channels = { release: null, beta: null, alpha: null };
+  for (const file of sorted) {
+    const type = curseforgeFileType(file);
+    if (!channels[type]) channels[type] = file;
+  }
+
+  if (options.includeAlpha && channels.alpha) return { file: channels.alpha, type: "alpha", channels };
+  if (options.includeBeta && channels.beta) return { file: channels.beta, type: "beta", channels };
+  if (channels.release) return { file: channels.release, type: "release", channels };
+  if (options.includeBeta && channels.beta) return { file: channels.beta, type: "beta", channels };
+  if (options.includeAlpha && channels.alpha) return { file: channels.alpha, type: "alpha", channels };
+  return { file: null, type: null, channels };
+}
+
+function betterCurseforgeMatch(hits, local) {
+  if (!Array.isArray(hits) || !hits.length) return null;
+  const slugNeedle = normalizeNameForSearch(local.slugGuess || "");
+  const queryNeedle = normalizeNameForSearch(local.query || "");
+  const queryTokens = queryNeedle.split("-").filter(Boolean);
+
+  const scored = hits.map((hit) => {
+    const slug = normalizeNameForSearch(hit?.slug || "");
+    const name = normalizeNameForSearch(hit?.name || "");
+    let score = 0;
+
+    if (slugNeedle && slug === slugNeedle) score += 140;
+    if (slugNeedle && name === slugNeedle) score += 130;
+    if (queryNeedle && slug === queryNeedle) score += 120;
+    if (queryNeedle && name === queryNeedle) score += 110;
+    if (slugNeedle && slug.startsWith(slugNeedle)) score += 40;
+    if (slugNeedle && name.startsWith(slugNeedle)) score += 35;
+
+    const tokenHits = queryTokens.filter((t) => slug.includes(t) || name.includes(t)).length;
+    score += tokenHits * 8;
+
+    if ((slugNeedle && slug.includes(slugNeedle)) || (slugNeedle && name.includes(slugNeedle))) score += 15;
+    if ((queryNeedle && slug.includes(queryNeedle)) || (queryNeedle && name.includes(queryNeedle))) score += 10;
+
+    return { hit, score, tokenHits };
+  }).sort((a, b) => b.score - a.score);
+
+  const best = scored[0];
+  if (!best) return null;
+  const minTokens = Math.max(1, Math.min(2, queryTokens.length));
+  if (best.score < 60 && best.tokenHits < minTokens) return null;
+  return best.hit;
+}
+
+async function resolveCurseforgeTargetFile(modId, detectedLoader, searchPath, options, apiKey) {
+  const files = await curseforgeGetFiles(modId, apiKey, 50);
+  if (!files.length) {
+    return {
+      latestRelease: null,
+      latestBeta: null,
+      latestAlpha: null,
+      recommendedFile: null,
+      recommendedType: null,
+      searchedVersion: null
+    };
+  }
+
+  const toCheck = searchPath.length ? searchPath : ["Unknown"];
+  for (const version of toCheck) {
+    const candidates = files
+      .filter((file) => !!file?.downloadUrl)
+      .filter((file) => curseforgeSupportsTargetVersion(file, version))
+      .filter((file) => curseforgeSupportsLoader(file, detectedLoader));
+
+    if (!candidates.length) continue;
+    const picked = chooseCurseforgeRecommended(candidates, options);
+    if (picked.file?.downloadUrl) {
+      return {
+        latestRelease: picked.channels.release,
+        latestBeta: picked.channels.beta,
+        latestAlpha: picked.channels.alpha,
+        recommendedFile: picked.file,
+        recommendedType: picked.type,
+        searchedVersion: normalizeLegacyVersion(version || "")
+      };
+    }
+  }
+
+  return {
+    latestRelease: null,
+    latestBeta: null,
+    latestAlpha: null,
+    recommendedFile: null,
+    recommendedType: null,
+    searchedVersion: null
+  };
+}
+
+async function findCurseforgeMatch(baseRow, parsed, detectedLoader, searchPath, options, apiKey, queryList) {
+  if (!apiKey) return null;
+
+  let chosen = null;
+  let matchedQuery = parsed.query || "";
+
+  if (baseRow?.curseforgeProjectId) {
+    chosen = await curseforgeGetMod(baseRow.curseforgeProjectId, apiKey);
+  }
+
+  if (!chosen) {
+    for (const q of queryList) {
+      const hits = await curseforgeSearchMods(q, apiKey, 12);
+      chosen = betterCurseforgeMatch(hits, { ...parsed, query: q });
+      if (chosen) {
+        matchedQuery = q;
+        break;
+      }
+    }
+  }
+
+  if (!chosen?.id) return null;
+
+  const resolution = await resolveCurseforgeTargetFile(chosen.id, detectedLoader, searchPath, options, apiKey);
+  if (!resolution.recommendedFile?.downloadUrl) return null;
+
+  const status = decideStatus(
+    parsed.installedVersion,
+    resolution.searchedVersion || extractMinecraftVersionFromCurseForgeFile(resolution.recommendedFile),
+    baseRow.sourceType,
+    true
+  );
+
+  return {
+    ...baseRow,
+    provider: "curseforge",
+    projectId: String(chosen.id),
+    slugGuess: parsed.slugGuess,
+    installedVersion: parsed.installedVersion,
+    query: matchedQuery || parsed.query,
+    matchFound: true,
+    match: chosen.name || null,
+    slug: chosen.slug || null,
+    url: resolution.recommendedFile.downloadUrl || null,
+    projectUrl: chosen?.links?.websiteUrl || (chosen?.slug ? `https://www.curseforge.com/minecraft/mc-mods/${chosen.slug}` : null),
+    recommendedFileName: resolution.recommendedFile.fileName || null,
+    lastUpdated: resolution.recommendedFile.fileDate || chosen?.dateModified || null,
+    latestRelease: resolution.latestRelease,
+    latestBeta: resolution.latestBeta,
+    latestAlpha: resolution.latestAlpha,
+    recommended: null,
+    recommendedType: resolution.recommendedType,
+    searchedVersion: resolution.searchedVersion,
+    fuzzyReplacementUsed: false,
+    fuzzyCandidatesConsidered: 0,
+    status
+  };
 }
 
 function extractMinecraftVersionFromCurseForgeFile(fileData) {
@@ -526,12 +902,55 @@ function decideStatus(installedVersion, recommendedVersion, sourceType, matchFou
 }
 
 async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options) {
+  const curseforgeApiKey = resolveApiKey(options, "curseforgeApiKey");
   const modrinthApiKey = resolveApiKey(options, "modrinthApiKey");
   const queryList = [...new Set([
     parsed.query,
     normalizeNameForSearch((parsed.fileName || "").replace(/\.jar$/i, "")),
     normalizeNameForSearch(baseRow.displayName || baseRow.mod || "")
   ].filter(Boolean))];
+
+  const toAdditionalResult = (preferredMatch) => {
+    if (!preferredMatch?.url) return null;
+    const status = decideStatus(parsed.installedVersion, preferredMatch.searchedVersion, baseRow.sourceType, true);
+    return {
+      ...baseRow,
+      provider: preferredMatch.provider,
+      projectId: preferredMatch.projectId,
+      slugGuess: parsed.slugGuess,
+      installedVersion: parsed.installedVersion,
+      query: preferredMatch.query || parsed.query,
+      matchFound: true,
+      match: preferredMatch.match,
+      slug: preferredMatch.slug,
+      url: preferredMatch.url,
+      projectUrl: preferredMatch.projectUrl,
+      recommendedFileName: preferredMatch.recommendedFileName,
+      lastUpdated: preferredMatch.lastUpdated,
+      latestRelease: null,
+      latestBeta: null,
+      latestAlpha: null,
+      recommended: null,
+      recommendedType: null,
+      searchedVersion: preferredMatch.searchedVersion,
+      fuzzyReplacementUsed: false,
+      fuzzyCandidatesConsidered: 0,
+      status
+    };
+  };
+
+  const preferAdditionalSources = options?.preferAdditionalSources === true;
+  if (preferAdditionalSources) {
+    const preferredMatch = await findPreferredAdditionalMatch(queryList, searchPath, options?.additionalSourceUrls || []);
+    const additionalResult = toAdditionalResult(preferredMatch);
+    if (additionalResult) return additionalResult;
+
+    const curseforgeResult = await findCurseforgeMatch(baseRow, parsed, detectedLoader, searchPath, options, curseforgeApiKey, queryList);
+    if (curseforgeResult) return curseforgeResult;
+  } else {
+    const curseforgeResult = await findCurseforgeMatch(baseRow, parsed, detectedLoader, searchPath, options, curseforgeApiKey, queryList);
+    if (curseforgeResult) return curseforgeResult;
+  }
 
   let chosen = null;
   let matchedQuery = parsed.query || "";
@@ -602,10 +1021,17 @@ async function enrichLookup(baseRow, parsed, detectedLoader, searchPath, options
     matchFound = !!chosen && !!resolution.recommended && !!resolution.recommendedFile?.url;
   }
 
+  if ((!matchFound || !chosen) && !preferAdditionalSources) {
+    const preferredMatch = await findPreferredAdditionalMatch(queryList, searchPath, options?.additionalSourceUrls || []);
+    const additionalResult = toAdditionalResult(preferredMatch);
+    if (additionalResult) return additionalResult;
+  }
+
   const status = decideStatus(parsed.installedVersion, resolution.recommended?.version_number || resolution.recommended?.name, baseRow.sourceType, matchFound);
   return {
     ...baseRow,
     provider: "modrinth",
+    projectId: chosen?.project_id || null,
     slugGuess: parsed.slugGuess,
     installedVersion: parsed.installedVersion,
     query: matchedQuery || parsed.query,
@@ -812,6 +1238,26 @@ async function scanFolder(folderEntries, fileName, options = {}, progress = () =
   return scanEntries(entries, fileName, scanOptions, progress);
 }
 
+async function getMinimumFabricLoaderVersion(gameVersion) {
+  const target = normalizeLegacyVersion(gameVersion || "");
+  if (!target) throw new Error("Target Minecraft version is required");
+
+  const list = await cachedFetchJson(
+    `https://meta.fabricmc.net/v2/versions/loader/${encodeURIComponent(target)}`,
+    `fabric_loader_min_any_${normalizeNameForSearch(target)}`
+  );
+
+  const candidates = (Array.isArray(list) ? list : [])
+    .map((item) => ({
+      version: String(item?.loader?.version || "").trim()
+    }))
+    .filter((item) => !!item.version);
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => compareLooseVersions(a.version, b.version));
+  return candidates[0]?.version || null;
+}
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === "OPEN_ROADMAP_PAGE") {
     chrome.tabs.create({ url: chrome.runtime.getURL("roadmap.html") }, () => {
@@ -824,6 +1270,22 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     chrome.tabs.create({ url: chrome.runtime.getURL("options.html") }, () => {
       sendResponse({ ok: !chrome.runtime.lastError });
     });
+    return true;
+  }
+
+  if (msg?.type === "GET_MIN_FABRIC_LOADER_VERSION") {
+    (async () => {
+      try {
+        const version = await getMinimumFabricLoaderVersion(msg?.gameVersion || "");
+        if (!version) {
+          sendResponse({ ok: false, error: "No Fabric Loader version was found for the selected Minecraft version." });
+          return;
+        }
+        sendResponse({ ok: true, version });
+      } catch (error) {
+        sendResponse({ ok: false, error: error?.message || String(error) });
+      }
+    })();
     return true;
   }
 

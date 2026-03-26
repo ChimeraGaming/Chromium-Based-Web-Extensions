@@ -16,6 +16,9 @@
       --accent: #2563eb;
       --muted: #6b7280;
       --status: #166534;
+      --scroll-track: #e5e7eb;
+      --scroll-thumb: #94a3b8;
+      --scroll-thumb-hover: #64748b;
       font-family: Arial, sans-serif;
       max-width: 960px;
       margin: 30px auto;
@@ -24,8 +27,14 @@
       color: var(--fg);
     }
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; margin-top: 16px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
     h1, h2 { margin-top: 0; color: var(--fg); }
+    .card-head h2 { margin: 0; }
     label { display: block; margin: 12px 0; color: var(--label); }
+    .stacked-field { margin: 12px 0; color: var(--label); }
+    .stacked-field .field-label { display: block; margin-bottom: 6px; }
+    .setting-toggle { margin: 10px 0; color: var(--label); }
+    .setting-toggle label { margin: 0; }
     input[type="checkbox"], select, input[type="text"], textarea { margin-right: 8px; }
     input[type="checkbox"] { accent-color: var(--accent); }
     select, input[type="text"], textarea {
@@ -43,9 +52,45 @@
       min-height: 160px;
       resize: vertical;
       font-family: Consolas, monospace;
+      scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    }
+    textarea::-webkit-scrollbar {
+      width: 12px;
+    }
+    textarea::-webkit-scrollbar-track {
+      background: var(--scroll-track);
+      border-radius: 10px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: var(--scroll-thumb);
+      border-radius: 10px;
+      border: 2px solid var(--scroll-track);
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: var(--scroll-thumb-hover);
     }
     .btn { background: var(--accent); color: white; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; margin-right: 8px; }
     .muted { color: var(--muted); line-height: 1.5; }
+    .count-chip {
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .source-shell {
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 12px;
+      background: var(--input-bg);
+    }
+    .source-detail {
+      margin-top: 8px;
+      font-size: 12px;
+    }
     #status { margin-top: 12px; color: var(--status); font-weight: 700; min-height: 20px; }
 
     body.muc-theme-dark {
@@ -60,6 +105,9 @@
       --accent: #2563eb;
       --muted: #9ca3af;
       --status: #86efac;
+      --scroll-track: #0b1220;
+      --scroll-thumb: #475569;
+      --scroll-thumb-hover: #64748b;
     }
 
     body.muc-theme-github-dark {
@@ -74,6 +122,9 @@
       --accent: #2f81f7;
       --muted: #8b949e;
       --status: #3fb950;
+      --scroll-track: #161b22;
+      --scroll-thumb: #484f58;
+      --scroll-thumb-hover: #6e7681;
     }
 
     body.muc-theme-snes-rainbow {
@@ -88,6 +139,9 @@
       --accent: #8f8acb;
       --muted: #d0cdf2;
       --status: #9cff7f;
+      --scroll-track: #2d2952;
+      --scroll-thumb: #8f8acb;
+      --scroll-thumb-hover: #aca8e5;
     }
   </style>
 </head>
@@ -96,58 +150,92 @@
 
   <div class="card">
     <h2>Core Settings</h2>
-    <label><input type="checkbox" id="includeBeta"> Include beta versions in recommendations</label>
-    <label><input type="checkbox" id="includeAlpha"> Include alpha versions in recommendations</label>
-    <label><input type="checkbox" id="reverseCompatible"> Search backwards from the target version if needed</label>
-    <label><input type="checkbox" id="fuzzyDescriptionReplacementSearch"> Fuzzy search mod descriptions to find replacement mods</label>
-    <label><input type="checkbox" id="ignoreCurrentVersionMods"> Ignore mods already on selected target version</label>
-    <label><input type="checkbox" id="onlyUpdatesCurrentSelected"> Only check updates for mods already on selected target version</label>
+    <div class="setting-toggle">
+      <label><input type="checkbox" id="includeBeta"> Include beta versions in recommendations</label>
+    </div>
+    <div class="setting-toggle">
+      <label><input type="checkbox" id="includeAlpha"> Include alpha versions in recommendations</label>
+    </div>
+    <div class="setting-toggle">
+      <label><input type="checkbox" id="reverseCompatible"> Search backwards from the target version if needed</label>
+    </div>
+    <div class="setting-toggle">
+      <label><input type="checkbox" id="fuzzyDescriptionReplacementSearch"> Fuzzy search mod descriptions to find replacement mods</label>
+    </div>
 
-    <label>Target Minecraft version
-      <input type="text" id="targetVersion" list="mcVersionList" autocomplete="off" spellcheck="false">
-      <datalist id="mcVersionList"></datalist>
-    </label>
+    <div class="stacked-field">
+      <label for="searchMode" class="field-label">Search Modes</label>
+      <select id="searchMode">
+        <option value="upgrade_standard">Upgrade Current Pack</option>
+        <option value="downgrade_standard">Downgrade Current Pack</option>
+        <option value="compare">Missing Mods (Compare Old and New)</option>
+        <option value="current_target">Check for Updates</option>
+        <option value="duplicates">Duplicate Check</option>
+        <option value="attempt_update_fabric">Attempt to update mod (Fabric only)</option>
+      </select>
+    </div>
+    <div class="muted">Pick how scans run from the main panel.</div>
 
-    <label>Default table size
+    <div class="stacked-field">
+      <label for="targetVersion" class="field-label">Target Minecraft version</label>
+      <select id="targetVersion"></select>
+    </div>
+
+    <div class="stacked-field">
+      <label for="density" class="field-label">Default table size</label>
       <select id="density">
         <option value="compact">Compact</option>
         <option value="comfortable">Comfortable</option>
         <option value="expanded">Expanded</option>
       </select>
-    </label>
+    </div>
 
-    <label>Theme
+    <div class="stacked-field">
+      <label for="theme" class="field-label">Theme</label>
       <select id="theme">
         <option value="light">Light</option>
         <option value="dark">Dark</option>
         <option value="github-dark">Github (Dark)</option>
         <option value="snes-rainbow">SNES</option>
       </select>
-    </label>
+    </div>
 
-    <label>Minecraft version database - one per line
+    <div class="stacked-field">
+      <label for="minecraftVersionDatabase" class="field-label">Minecraft version database - one per line</label>
       <textarea id="minecraftVersionDatabase"></textarea>
-    </label>
+    </div>
   </div>
 
   <div class="card">
-    <h2>Additional Sources</h2>
-    <label>Extra source URLs - one per line
-      <textarea id="additionalSourceUrls" placeholder="https://github.com/owner/repo&#10;https://example.com/docs"></textarea>
-    </label>
-    <div class="muted">
-      GitHub repo URLs open repo scoped searches. Other URLs open a site scoped search in a new tab.
+    <div class="card-head">
+      <h2>Additional Sources</h2>
+      <span class="count-chip" id="additionalSourceCount">0 sources</span>
+    </div>
+    <div class="source-shell">
+      <div class="stacked-field">
+        <label for="additionalSourceUrls" class="field-label">Extra source urls - one per line.</label>
+        <textarea id="additionalSourceUrls" placeholder="https://github.com/owner/repo&#10;https://example.com/docs"></textarea>
+      </div>
+      <div class="setting-toggle">
+        <label><input type="checkbox" id="preferAdditionalSources"> Prefer Additional Sources over Modrinth/CurseForge</label>
+      </div>
+      <div class="muted">
+        GitHub repo URLs are checked for matching JAR files.
+      </div>
+      <div class="muted source-detail" id="additionalSourceDetail"></div>
     </div>
   </div>
 
   <div class="card">
     <h2>API and Cache</h2>
-    <label>CurseForge API key
+    <div class="stacked-field">
+      <label for="curseforgeApiKey" class="field-label">CurseForge API key</label>
       <input type="text" id="curseforgeApiKey" autocomplete="off" spellcheck="false" placeholder="Leave blank in final builds">
-    </label>
-    <label>Modrinth API key (optional)
+    </div>
+    <div class="stacked-field">
+      <label for="modrinthApiKey" class="field-label">Modrinth API key (optional)</label>
       <input type="text" id="modrinthApiKey" autocomplete="off" spellcheck="false" placeholder="Optional for authenticated requests">
-    </label>
+    </div>
 
     <button class="btn" id="saveBtn">Save settings</button>
     <button class="btn" id="clearCacheBtn">Clear API cache</button>
@@ -157,7 +245,7 @@
   <div class="card">
     <h2>Notes</h2>
     <div class="muted">
-      This page is focused on scan behavior and API settings only. Save here, then rescan from the page panel.
+      If you want something added here please leave an issue on the github page.
     </div>
   </div>
 
