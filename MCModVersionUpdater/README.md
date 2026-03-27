@@ -6,6 +6,10 @@ A Chromium-based extension that scans Minecraft modpacks and helps map mods to a
 
 Built to speed up upgrade, downgrade, compare, duplicate, and targeted update workflows.
 
+<img width="1123" height="902" alt="image" src="https://github.com/user-attachments/assets/b05be34e-4f26-4db7-bdb4-92eac887d46f" />
+<img width="354" height="373" alt="image" src="https://github.com/user-attachments/assets/11b06a93-e9c4-4961-a87c-b5b50cd2c1a3" />
+
+
 ---
 
 ## Overview
