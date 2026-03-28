@@ -1,28 +1,27 @@
 # Mod Update Checker
 
-Version 2.0
+Version `2.0`
 
-A Chromium-based extension that scans Minecraft modpacks and helps map mods to a selected target Minecraft version.
+Mod Update Checker is a Chromium-based extension that scans Minecraft modpacks and compares mods against a selected target Minecraft version.
 
-Built to speed up upgrade, downgrade, compare, duplicate, and targeted update workflows.
+It is built to speed up upgrade, downgrade, comparison, duplicate check, and targeted update workflows.
 
 <img width="1123" height="902" alt="image" src="https://github.com/user-attachments/assets/b05be34e-4f26-4db7-bdb4-92eac887d46f" />
 <img width="354" height="373" alt="image" src="https://github.com/user-attachments/assets/11b06a93-e9c4-4961-a87c-b5b50cd2c1a3" />
-
 
 ---
 
 ## Overview
 
-Mod Update Checker analyzes ZIPs and folders, then compares each mod against supported sources.
+Mod Update Checker analyzes ZIP files and folders, then compares each mod against supported sources.
 
-The results table shows:
+The results table includes:
 
 - Mod name
 - Current version
 - Selected version
 - Match status
-- Upgradable or Downgradable state by mode
+- Upgrade or downgrade state by mode
 - Last updated date
 - Direct and site links
 
@@ -30,20 +29,14 @@ The results table shows:
 
 ## Core Features
 
-- Single upload button with ZIP and Folder picker
+- Single upload flow with ZIP and folder support
 - Header filters with multi-token `;` matching
-- Last Updated filter plus newest and oldest sort
-- Match links split into:
-  - `Direct - Source` for downloads and export
-  - `Site - Source` for project pages
+- Last Updated filtering with newest and oldest sorting
+- Match links split into `Direct - Source` for downloads and `Site - Source` for project pages
 - Export to `.meta4` for JDownloader2
-- `Download All` for filtered direct links
-- Theme support:
-  - Light
-  - Dark
-  - Github (Dark)
-  - SNES
-- Draggable in-page panel that auto closes after successful scans
+- `Download All` support for filtered direct links
+- Theme support for Light, Dark, Github (Dark), and SNES
+- Draggable in-page panel that closes after successful scans
 
 ---
 
@@ -64,25 +57,24 @@ This mode takes one Fabric JAR and:
 
 - Opens the archive
 - Locates `fabric.mod.json` or `fabric.mod.jsonm`
-- Updates `minecraft` dependency to the selected target version
-- Updates Fabric Loader dependency using the minimum available loader for the target version
-- Rebuilds the JAR and prompts for output filename
+- Updates the `minecraft` dependency to the selected target version
+- Updates the Fabric Loader dependency using the minimum available loader for the target version
+- Rebuilds the JAR and prompts for an output filename
 
 ---
 
 ## Settings
 
 - Target Minecraft version database
-- Search mode default
+- Default search mode
 - Reverse search toggle
 - Include beta and alpha toggles
 - Fuzzy replacement search toggle
 - Theme and table density
 - Additional Sources list
 - Prefer Additional Sources toggle
-- API keys:
-  - CurseForge API key
-  - Modrinth API key optional
+- CurseForge API key support
+- Optional Modrinth API key support
 
 ---
 
@@ -98,8 +90,8 @@ If `Prefer Additional Sources over Modrinth/CurseForge` is enabled, those source
 
 1. Download or clone this repository.
 2. Open `chrome://extensions`.
-3. Enable Developer Mode.
-4. Click `Load unpacked`.
+3. Enable **Developer Mode**.
+4. Click **Load unpacked**.
 5. Select the extension folder.
 
 ---
@@ -108,17 +100,17 @@ If `Prefer Additional Sources over Modrinth/CurseForge` is enabled, those source
 
 1. Open Modrinth or CurseForge.
 2. Open the panel.
-3. Select scan mode.
-4. Select target Minecraft version.
-5. Upload ZIP or Folder.
-6. Review and filter results.
+3. Select a scan mode.
+4. Select a target Minecraft version.
+5. Upload a ZIP or folder.
+6. Review and filter the results.
 7. Export `.meta4` or use `Download All`.
 
 ---
 
 ## Notes
 
-- This tool assists discovery and matching. It does not guarantee full pack compatibility.
+- This tool assists with discovery and matching. It does not guarantee full pack compatibility.
 - Some mods may not have files for the selected target version.
 - If CurseForge API is not configured, CurseForge rows can show `ADD CURSEFORGE API`.
 - Version `26.1` is included in the default version database.
@@ -136,7 +128,7 @@ For full release history, see [CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 
-See `LICENSE`.
+See [LICENSE](./LICENSE).
 
 ---
 

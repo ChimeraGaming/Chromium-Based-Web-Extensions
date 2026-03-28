@@ -5,32 +5,31 @@
 
 # Chimera Web Extensions
 
-Welcome to **Chimera Web Extensions** - a collection of browser tools, media platform enhancements, and utility add-ons maintained by [ChimeraGaming](https://github.com/ChimeraGaming).
+Chimera Web Extensions is a collection of browser tools, Stremio projects, and utility extensions maintained by [ChimeraGaming](https://github.com/ChimeraGaming).
 
-This repository includes tools for **Stremio**, **Chromium-based browsers**, and other platforms to improve workflow, organization, and media experiences.
+The repository currently includes projects for Stremio and Chromium-based browsers, with room for additional tools over time.
 
-> Most extensions in this repository are open source, unless otherwise stated.
+> Most extensions in this repository are open source unless otherwise noted.
 
 ---
 
-## Structure
+## Repository Layout
 
-```plaintext
-/Chromium-Based-Web-Extensions/
-├── Stremio Addons and Extensions/
-│   ├── Chimera Folders/
-│   └── ...
-├── Amazon Save for Later Organizer/
-├── Link Scraper/
-├── MCModVersionUpdater/
-└── (More tools/extensions coming soon)
+```text
+Chromium-Based-Web-Extensions/
+  Stremio Addons and Extensions/
+    Chimera Folders/
+  Amazon Save for Later Organizer/
+  Link Scraper/
+  MCModVersionUpdater/
 ```
 
-Each project folder typically contains:
-- manifest.json for Chrome-based extensions
-- README.md with features and install instructions
+Most project folders include:
+
+- `README.md` with project details and installation notes
+- `manifest.json` for browser extensions
 - JavaScript, CSS, and HTML source files
-- Optional icons, assets, changelogs, or supporting files
+- Optional icons, changelogs, or support files
 
 ---
 
@@ -38,64 +37,61 @@ Each project folder typically contains:
 
 ### [Stremio Addons and Extensions](./Stremio%20Addons%20and%20Extensions)
 
-Custom Stremio extensions designed to improve media browsing with better folder management, UI tweaks, and future experimental features.
+Custom Stremio projects focused on organization, workflow improvements, and UI enhancements.
 
-Included:
+Current project:
+
 - Chimera Folders
 
 ### [Amazon Save for Later Organizer](./Amazon%20Save%20for%20Later%20Organizer)
 
-A modern sidebar tool for organizing Amazon's Save for Later section with categorized folders, link previews, and a cleaner browsing experience.
+A sidebar tool for organizing Amazon's Save for Later section with searchable results, folder-style grouping, and a cleaner browsing workflow.
 
 ### [Link Scraper](./Link%20Scraper)
 
-A Chromium-based utility that scrapes links from a page and helps organize, filter, edit, and export them in a more usable format.
+A Chromium-based utility that scrapes links from the current page, lets you filter and edit results, and supports `.meta4` export.
 
 ### [MCModVersionUpdater](./MCModVersionUpdater)
 
-A Chromium-based Minecraft modpack utility that scans ZIPs or folders and compares mods against a selected target Minecraft version for upgrade, downgrade, duplicate check, and update workflows.
+A Chromium-based Minecraft modpack utility that scans ZIPs or folders and compares mods against a selected Minecraft version for update, downgrade, duplicate check, and comparison workflows.
 
 ---
 
 ## Built With
 
-- JavaScript / Node.js
+- JavaScript
 - Chrome Extension APIs
 - Stremio Addon SDK
 - GitHub Actions
 
 ---
 
-## Community Ideas Welcome
+## Contributing
 
-I'm actively expanding this repository and open to community suggestions.
+Community ideas and contributions are welcome.
 
-### Have an idea?
-- Open a feature suggestion  
-  https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/issues/new?labels=enhancement&template=feature_request.md
-- Start a discussion  
-  https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/discussions
-- Or fork the repo and submit a pull request
+- Open a feature suggestion: [GitHub Issues](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/issues/new?labels=enhancement&template=feature_request.md)
+- Start a discussion: [GitHub Discussions](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/discussions)
+- Fork the repository and open a pull request
 
-You can suggest:
+Ideas that fit well here:
+
 - New Chromium-based extensions for Chrome, Edge, Brave, and similar browsers
-- Media tools for platforms like Twitch, YouTube, Stremio, or Plex
+- Media tools for platforms such as Twitch, YouTube, Stremio, or Plex
 - Quality-of-life scripts and automation tools
 - UI and UX improvements
 
-> Note: Some platforms may block hooks or scripts due to their own protections. Compatibility can vary.
+> Some platforms may block hooks or scripts due to their own protections, so compatibility can vary.
 
 ---
 
-## How to Contribute
+## Development
 
-1. Fork the repo
-2. Create a new branch:
-   git checkout -b feature/my-new-addon
-3. Commit your changes
-4. Push to your fork:
-   git push origin feature/my-new-addon
-5. Open a pull request
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature/my-new-addon`
+3. Commit your changes.
+4. Push to your fork: `git push origin feature/my-new-addon`
+5. Open a pull request.
 
 ---
 

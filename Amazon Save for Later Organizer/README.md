@@ -1,51 +1,54 @@
-# Amazon Save For Later Organizer
+# Amazon Save for Later Organizer
 
-Quickly scan and manage your "Save for Later" list on Amazon with a glowing, collapsible sidebar. This extension opens each saved item in a background tab, scrapes the full product name, and closes the tab — making your items easier to search and filter.
+Amazon Save for Later Organizer helps you scan and manage your Amazon "Save for Later" list with a collapsible sidebar interface.
+
+The extension opens each saved item in a background tab, grabs the full product title, and closes the tab so your saved items are easier to search and review.
 
 ---
 
 ## Features
 
-- **Searchable Results** – Real-time search filter makes finding items instant  
-- **Smart Tab Scraping** – Automatically opens each saved item in the background, grabs the full title, then closes the tab  
-- **Glowing Sidebar UI** – Neon-themed, animated sidebar with a toggle button  
-- **Auto Populating** – One-click scan to collect and display all items, including a live counter  
-- **Remembers State** – Sidebar toggle remains consistent across sessions  
-- **Lightweight and Local** – All processing is local in your browser. No servers, no tracking
+- Real-time search for scanned items
+- Background title scraping for fuller product names
+- Collapsible sidebar with a glowing, animated UI
+- One-click scan and populate flow with a live item counter
+- Saved sidebar state across sessions
+- Local browser processing with no servers and no tracking
 
 ---
 
 ## Performance Notes
 
-- Speeds depend heavily on your internet connection and device performance.
+- Scan speed depends on your internet connection and device performance.
 - More than 250 items may cause UI lag.
 - More than 1000 items may crash Chrome on lower-spec machines.
-- Avoid running multiple scans at once for best results.
+- Avoid running multiple scans at the same time for best results.
 
 ---
 
 ## UI Preview
 
-See the latest screenshots in the [UI Changelog](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/blob/main/Amazon%20Save%20for%20Later%20Organizer/UI_Changelog.md)
+See the latest screenshots in the [UI Changelog](https://github.com/ChimeraGaming/Chromium-Based-Web-Extensions/blob/main/Amazon%20Save%20for%20Later%20Organizer/UI_Changelog.md).
 
 ---
 
-## How to Install (Manual Method)
+## Manual Installation
 
-1. Clone or download this repository
-2. Go to `chrome://extensions/`
-3. Enable **Developer Mode**
-4. Click **Load unpacked** and select the extension folder
+1. Clone or download this repository.
+2. Open `chrome://extensions/`.
+3. Enable **Developer Mode**.
+4. Click **Load unpacked**.
+5. Select the `Amazon Save For Later Organizer` extension folder inside this project.
 
 ---
 
 ## How It Works
 
-1. Visit your Amazon cart and scroll to your "Save for Later" section
-2. The sidebar should autoload
-3. Click **Start Scan** (It will auto scroll)
-4. After the scan, click **Populate**
-5. The extension will open and close tabs to fetch full item names, then display them in the sidebar
+1. Visit your Amazon cart and scroll to the "Save for Later" section.
+2. Let the sidebar load.
+3. Click **Start Scan**. The page will auto-scroll during the scan.
+4. Click **Populate** after the scan finishes.
+5. Review the collected items in the sidebar.
 
 ---
 
@@ -55,4 +58,4 @@ See the latest screenshots in the [UI Changelog](https://github.com/ChimeraGamin
 - [Terms of Use](./TERMS.md)
 - [MIT License](./LICENSE)
 
-For issues, support, or feature requests, please open an issue in the repository.
+For issues, support, or feature requests, open an issue in the repository.
