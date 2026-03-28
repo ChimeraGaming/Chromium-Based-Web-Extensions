@@ -17,11 +17,11 @@ The repository currently includes projects for Stremio and Chromium-based browse
 
 ```text
 Chromium-Based-Web-Extensions/
-  Stremio Addons and Extensions/
-    Chimera Folders/
-  Amazon Save for Later Organizer/
-  Link Scraper/
-  MCModVersionUpdater/
+├── Stremio Addons and Extensions/
+│   └── Chimera Folders/
+├── Amazon Save for Later Organizer/
+├── Link Scraper/
+└── MCModVersionUpdater/
 ```
 
 Most project folders include:
