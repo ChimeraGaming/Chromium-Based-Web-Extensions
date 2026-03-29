@@ -22,7 +22,11 @@ All notable changes to this project are documented here.
 - Added fullscreen auto hide as a toggle in settings
 - Added refined sidebar controls with Home, GitHub, Discord, Settings, Pin, Add, Edit, and Close actions
 - Added a statistics panel in settings for shows watched, movies watched, and total watch time
+<<<<<<< HEAD
 - Added folder locking with per folder PINs or passwords
+=======
+- Added folder locking with per folder codes or passwords
+>>>>>>> a2798922224a8a047aa19ff56f34b734fe1587ce
 - Added master override support with 4 digit code, 6 digit code, or password options
 - Added a master setting that can allow deletion of locked folders without entering the folder credential
 - Restored and fixed the extension icon in Folder View branding
