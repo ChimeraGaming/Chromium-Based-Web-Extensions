@@ -4,9 +4,9 @@
 
 > Planned future direction: move this project toward a full addon release.
 
-Organize your **Stremio Web** library with personal folders, a dark interface, and fast navigation tools.
+Organize your **Stremio Web** library with personal folders, a dark interface, fast navigation tools, and full backup and restore support.
 
-![Version](https://img.shields.io/badge/version-3.1.0-blueviolet)
+![Version](https://img.shields.io/badge/version-4.0.0-blueviolet)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-red)
 
@@ -23,6 +23,17 @@ Organize your **Stremio Web** library with personal folders, a dark interface, a
 - Return to the main page with a Home button
 - Collapse the sidebar for cleaner browsing
 - Pin or unpin the sidebar with hover behavior
+- Switch between left sidebar, right sidebar, and a draggable folder window view
+- Close the panel and reopen it from the page launcher
+- Toggle fullscreen auto hide from settings
+- Search folders and saved titles from the sidebar
+- Use Edit mode to rename folders and saved titles
+- Drag and drop folders to reorder them
+- Drag and drop saved titles within a folder or into another folder
+- Remember folder collapse state after reloads and exports
+- Open a dedicated settings tab from the sidebar
+- Export and import folders, saved links, and extension settings
+- Open the Stremio community Discord from the sidebar
 - Open the GitHub project link from the UI
 - Run with no external dependencies
 
@@ -86,10 +97,24 @@ Note: Firefox only supports temporary installation unless the extension is submi
 
 ## Recent Highlights
 
+- Added Edit mode for folder renaming, title renaming, folder reordering, and drag and drop moves
+- Added sidebar search and saved collapse state so larger libraries stay manageable
+- Added view settings for left sidebar, right sidebar, and draggable folder window layouts
+- Added a fullscreen auto hide toggle so the panel only hides when that setting is enabled
+- Added a new settings tab with full export and import support
+- Moved saved data into extension storage so backups restore folders and settings together
+- Added automatic migration from the previous local site storage format
 - Switched from a minified build to the full `addon.js` source for transparency
 - Added the MIT License for open-source collaboration
 - Improved the project structure for public GitHub releases
 - Connected the missing Create Folder button so the sidebar flow works correctly
+
+## Upgrade Notes
+
+- Version 4.0.0 migrates existing folder data into extension storage the next time you open `web.stremio.com`
+- After migrating once, use the new sidebar settings button to create or restore backups
+- Edit mode now handles folder reordering, cross-folder title moves, and saved title renaming
+- View settings now control layout mode and fullscreen auto hide behavior
 
 ---
 

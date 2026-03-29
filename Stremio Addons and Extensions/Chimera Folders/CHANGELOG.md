@@ -1,140 +1,271 @@
-# 📜 Changelog
+# Changelog
 
 All notable changes to this project are documented here.
 
 ---
 
-## 1.x.x — Light Mode Era
+## 4.x.x - Settings and Expansion
+<details>
+<summary>View 4.x.x updates</summary>
+
+### 4.0.0 - Settings Import Export and Feature Expansion
+<details>
+<summary>View changes</summary>
+
+- Added a dedicated settings page that opens in a new tab from the sidebar
+- Added full export and import support for folders, saved links, settings, and lock data
+- Moved saved data into shared extension storage and added migration from the earlier localStorage format
+- Added Sidebar Left, Sidebar Right, and Folder View layout modes
+- Added a draggable explorer style folder window with repo branding and a launcher to reopen it after closing
+- Added full Edit mode with folder rename, saved title rename, folder reordering, and drag and drop moves between folders
+- Added sidebar search and remembered folder collapse state
+- Added fullscreen auto hide as a toggle in settings
+- Added refined sidebar controls with Home, GitHub, Discord, Settings, Pin, Add, Edit, and Close actions
+- Added a statistics panel in settings for shows watched, movies watched, and total watch time
+- Added folder locking with per folder PINs or passwords
+- Added master override support with 4 digit code, 6 digit code, or password options
+- Added a master setting that can allow deletion of locked folders without entering the folder credential
+- Restored and fixed the extension icon in Folder View branding
+- Kept the Stremio matched color direction while expanding the interface and settings system
+
+</details>
+
+</details>
+
 ---
 
-### 1.0.0
-- Initial release: Sidebar created to list folders
-- Basic "Create Folder" functionality
-- Very simple visual styling (light mode)
+## 3.x.x - Open Source and Expansion
+<details>
+<summary>View 3.x.x updates</summary>
 
-### 1.1.0
-- Minor bugfixes to folder creation flow
-- Prevented duplicate folder names at base level
-- Basic toast message on folder creation
+### 3.1.0 - Create Folder Fix
+<details>
+<summary>View changes</summary>
 
-### 1.2.0
-- Added basic "Add Show" functionality
-- Implemented localStorage for folder persistence
-- Basic validation to prevent empty folder names
+- Fixed Create Folder button functionality
+- Connected missing event handler
+- Restored full sidebar functionality
+- Minor internal code cleanup
 
-### 1.3.0
-- Introduced simple popup modal to choose folders
-- Toast notification upon successful adding to folder
-- Base groundwork for dynamic updating of folder list
+</details>
+
+### 3.0.1 - Open Source Release
+<details>
+<summary>View changes</summary>
+
+- Replaced minified code with readable source
+- Switched to MIT License
+- Added full README with install instructions
+- Updated manifest to use addon.js
+- Cleaned project structure
+
+</details>
+
+### 3.0.0 - Release Candidate 1
+<details>
+<summary>View changes</summary>
+
+- Added GitHub button to UI
+- Linked to public repository
+- Styled button to match theme
+- Minor UI polish
+
+</details>
+
+</details>
 
 ---
 
-## 2.x.x — Dark Mode + Modern UI
----
+## 2.x.x - Dark Mode and Modern UI
+<details>
+<summary>View 2.x.x updates</summary>
 
-### 2.0.0 — Dark Mode Transformation
-- Fully rebuilt UI with dark theme: sidebar, modals, buttons
-- Polished visual elements (rounded corners, spacing)
-- Updated font styles to match Stremio Web
-- Better visual alignment of sidebar sections
+### 2.10.0 - Full UI Overhaul
+<details>
+<summary>View changes</summary>
 
-### 2.1.0
-- Added **Home** button to sidebar
-- Home button redirects back to `https://web.stremio.com/`
-- Basic home button styling added
+- Complete dark mode rework to match Stremio visual theme
+- Home and Add buttons redesigned with gradient styling
+- Sidebar can minimize and reveal on hover
+- Folder groups collapse and expand with animated indicators
+- Added confirmation prompts before deleting folders or shows
+- Improved sidebar transitions
+- Cleaned and organized code structure
 
-### 2.2.0
-- Added **"Add to Folder"** button next to Home
-- Clean horizontal layout for Home/Add
-- Buttons moved into sidebar header for better UX
+</details>
 
-### 2.3.0
-- Improved toast popup appearance
-- Enlarged font and padding for toasts
-- Added smooth fade-in and fade-out for toast notifications
-- Unified green success color to match overall dark theme
+### 2.9.1 - Sidebar Button Polish and Minimize Fix
+<details>
+<summary>View changes</summary>
 
-### 2.4.0
-- Folder entries made clickable
-- Clicking show names in a folder now navigates directly to their Stremio page
-- Properly handles full page hash routes (e.g., `#/detail/series/tt12345678`)
+- Re added sidebar minimize button
+- Aligned Home, Add, and Minimize buttons into one row
+- Added hover effects and smooth transitions
+- Minor CSS cleanup
 
-### 2.5.0
-- Proper duplicate detection for shows inside folders
-- Prevents adding same show twice
-- Different toast ("Already in folder!") if trying to re-add
+</details>
 
-### 2.6.0
-- Folder tree dropdowns added
-- Folders can expand/collapse shows inside
-- Subtle animations and clean toggling for child items
-- Margins/padding cleaned up for readability
+### 2.9.0 - Show Management and Confirmations
+<details>
+<summary>View changes</summary>
+
+- Added remove buttons for shows inside folders
+- Added confirmation prompts before removing shows
+- Added confirmation before deleting folders
+- Improved toast notifications
+- Minor UI alignment fixes
+- Added LICENSE file
+
+</details>
+
+### 2.8.0 - Chrome Extension Ready
+<details>
+<summary>View changes</summary>
+
+- Built manifest.json for Chrome Extension
+- Added extension icon support
+- Minified code for release
+- Separated private and public code
+- Prepared project for GitHub releases
+
+</details>
 
 ### 2.7.0
-- Home and Add buttons polished visually
-- Added icon to Home button (🏠)
-- Added icon to Add button (➕)
-- Buttons sized properly for mobile and desktop scaling
-- Minor sidebar responsiveness improvements
+<details>
+<summary>View changes</summary>
 
-### 2.8.0 — Chrome Extension Ready
-- Built `manifest.json` for Chrome Extension (Manifest v3)
-- Added extension `icon.png` (128x128 recommended)
-- Minified code into `addon.min.js` for public release
-- Separated private source code from public distribution
-- Prepared project for GitHub releases (structure and security best practices)
+- Improved Home and Add button styling
+- Added icons to buttons
+- Improved responsiveness
+- Minor sidebar fixes
 
-## 2.9.0 — Show Management & Confirmations Update
-- Added white minus (➖) buttons next to each show inside folders
-- Clicking the minus button prompts a confirmation before removing the show
-- Clicking the red ❌ button on folders now prompts a confirmation before deleting the entire folder
-- Improved toast notifications for better user feedback
-- Minor spacing and UI alignment fixes to folder and show lists
-- LICENSE file added (Personal Use Only + Stremio Collaboration offer)
+</details>
 
-## 2.9.1 — Sidebar Button Polish & Minimize Fix
-- Re-added missing sidebar minimize/collapse button (top-right)
-- Aligned Home ➕ Add ➕ Minimize buttons into one clean row
-- Added hover effects to all top buttons (Home, Add, Minimize) for modern polish
-  - Light background brighten effect on hover
-  - Smooth transition animations
-- Minor CSS tweaks for consistency
+### 2.6.0
+<details>
+<summary>View changes</summary>
 
-## 2.10.0 - Full Dark Mode UI, Auto-Hiding Sidebar, Collapsible Folders
-- Complete dark mode rework to match Stremio visual theme
-- Home and Add buttons redesigned with purple gradient styling
-- Sidebar can now minimize fully and reveal itself on hover
-- Folder groups can now collapse and expand individually with animated chevrons
-- Added confirmation prompts before deleting folders or shows
-- Optimized sidebar transitions for smooth animations
-- Cleaned and organized code structure for Chrome Extension packaging
+- Added folder expand and collapse system
+- Improved spacing and readability
+- Added subtle animations
 
-## 🚀 3.0.0 - [Release Candidate 1]
-- **NEW:** GitHub icon button added to top-right
-- **NEW:** GitHub button links directly to the public repository
-- Matched the GitHub button color styling to the Stremio purple/blue gradient
-- Minor tweaks to button alignment and hover glow for GitHub button
+</details>
 
-## 3.0.1 — Open Source Release
-- Replaced `addon.min.js` with full, readable `addon.js` for public visibility and collaboration  
-- Converted license to **MIT License** for open-source usage and proper credit attribution  
-- Added complete `README.md` with Chrome Extension install instructions and GitHub repo link  
-- Updated `manifest.json` to reflect `addon.js` usage (non-minified)  
-- Cleaned and organized project structure for transparent development and GitHub releases
+### 2.5.0
+<details>
+<summary>View changes</summary>
 
-## 🛠 3.1.0 — Create Folder Fix
-- **FIXED:** Connected missing `Create Folder` button event so folders can now be created properly
-- **UPDATED:** Inserted `create-folder` onclick handler cleanly before first `renderFolders()` call
-- **IMPROVED:** Sidebar UI now fully functional with add, remove, and create folder features working
-- **STYLE:** Minor internal code formatting cleanup for better readability
+- Added duplicate detection for shows
+- Prevented duplicate entries
+- Added duplicate warning toast
+
+</details>
+
+### 2.4.0
+<details>
+<summary>View changes</summary>
+
+- Made folder entries clickable
+- Added navigation to show pages
+- Improved route handling
+
+</details>
+
+### 2.3.0
+<details>
+<summary>View changes</summary>
+
+- Improved toast appearance
+- Increased readability
+- Added fade animations
+
+</details>
+
+### 2.2.0
+<details>
+<summary>View changes</summary>
+
+- Added Add to Folder button
+- Improved layout with Home button
+- Updated sidebar header structure
+
+</details>
+
+### 2.1.0
+<details>
+<summary>View changes</summary>
+
+- Added Home button
+- Added redirect to homepage
+- Minor styling improvements
+
+</details>
+
+### 2.0.0 - Dark Mode Transformation
+<details>
+<summary>View changes</summary>
+
+- Rebuilt UI with dark theme
+- Improved layout and spacing
+- Updated fonts
+- Improved visual hierarchy
+
+</details>
+
+</details>
 
 ---
 
-# 📌 Notes
-- Version 1.x.x represents early Light Mode development.
-- Version 2.x.x introduced Dark Mode and major UI/UX improvements.
-- Version 3.x.x and beyond focus on open-source release, public GitHub collaboration, and cleaner extension development.
-- -
+## 1.x.x - Light Mode Era
+<details>
+<summary>View 1.x.x updates</summary>
+
+### 1.3.0
+<details>
+<summary>View changes</summary>
+
+- Added folder selection modal
+- Added toast notification on add
+- Prepared dynamic folder updates
+
+</details>
+
+### 1.2.0
+<details>
+<summary>View changes</summary>
+
+- Added Add Show functionality
+- Implemented local storage
+- Added validation for empty names
+
+</details>
+
+### 1.1.0
+<details>
+<summary>View changes</summary>
+
+- Fixed folder creation issues
+- Prevented duplicate folder names
+- Added basic toast messages
+
+</details>
+
+### 1.0.0
+<details>
+<summary>View changes</summary>
+
+- Initial release
+- Sidebar folder system
+- Basic UI
+
+</details>
+
+</details>
 
 ---
 
+# Notes
+- 4.x.x focuses on settings and feature expansion
+- 3.x.x focuses on open source and structure
+- 2.x.x focuses on UI and functionality
+- 1.x.x is the foundation

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chimera Folders Settings</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --page-bg: #17133a;
+            --panel-bg: rgba(28, 28, 28, 0.92);
+            --panel-border: rgba(123, 97, 255, 0.3);
+            --text-main: #ffffff;
+            --text-muted: #b7b7cc;
+            --accent-start: #7b61ff;
+            --accent-end: #0040ff;
+            --input-bg: #2a2a2a;
+            --input-border: #4b4b62;
+            --success-bg: rgba(44, 132, 86, 0.22);
+            --success-border: rgba(76, 190, 122, 0.45);
+            --error-bg: rgba(154, 43, 43, 0.22);
+            --error-border: rgba(230, 92, 92, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(123, 97, 255, 0.25), transparent 34%),
+                radial-gradient(circle at bottom right, rgba(0, 64, 255, 0.22), transparent 30%),
+                var(--page-bg);
+            color: var(--text-main);
+        }
+
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 30px 18px 42px;
+        }
+
+        .hero {
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 720px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
+        .settings-view-panel {
+            margin-bottom: 18px;
+        }
+
+        .settings-view-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-view-label {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .settings-view-select {
+            max-width: 260px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-block {
+            margin-bottom: 12px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(8px);
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .panel p {
+            margin: 0 0 12px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
+        .section-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .section-toggle:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section-toggle-label {
+            font: inherit;
+            font-weight: 700;
+        }
+
+        .section-toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            background: rgba(123, 97, 255, 0.2);
+            border: 1px solid rgba(123, 97, 255, 0.38);
+            color: var(--text-main);
+            font-size: 0.94rem;
+            line-height: 1;
+        }
+
+        .section-body {
+            margin-top: 12px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px;
+        }
+
+        .stats-summary {
+            grid-template-columns: repeat(2, minmax(130px, 1fr));
+        }
+
+        .metric {
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .metric-wide {
+            grid-column: 1 / -1;
+        }
+
+        .metric span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            margin-bottom: 4px;
+        }
+
+        .metric strong {
+            font-size: 0.98rem;
+            line-height: 1.3;
+        }
+
+        .metric-time {
+            display: block;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .mode-card {
+            display: block;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+        }
+
+        .mode-card input {
+            margin-right: 8px;
+        }
+
+        .mode-card strong {
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .mode-card span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
+        .field-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .field-card span {
+            color: var(--text-muted);
+            font-size: 0.84rem;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .toggle-row label {
+            font-weight: 700;
+        }
+
+        .explain-note {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        button,
+        .file-input {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        button {
+            cursor: pointer;
+            color: var(--text-main);
+            background: linear-gradient(to bottom, var(--accent-start), var(--accent-end));
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .secondary-button {
+            background: linear-gradient(to bottom, #6d6d6d, #474747);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px rgba(123, 97, 255, 0.65);
+        }
+
+        .secondary-button:hover {
+            box-shadow: 0 0 10px rgba(160, 160, 160, 0.35);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button.section-toggle {
+            min-height: 0;
+            padding: 0;
+            border-radius: 0;
+            background: transparent;
+            color: inherit;
+            box-shadow: none;
+            transition: none;
+        }
+
+        button.section-toggle:hover {
+            background: transparent;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .file-input {
+            width: 100%;
+            color: var(--text-main);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+        }
+
+        .text-input,
+        .select-input {
+            width: 100%;
+            color: var(--text-main);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 0.9rem;
+            color-scheme: dark;
+        }
+
+        .select-input option,
+        .select-input optgroup {
+            color: var(--text-main);
+            background: #231f4d;
+        }
+
+        .file-input::file-selector-button {
+            margin-right: 12px;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            background: linear-gradient(to bottom, var(--accent-start), var(--accent-end));
+            cursor: pointer;
+        }
+
+        .note {
+            margin-top: 12px;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .backup-split {
+            display: flex;
+            align-items: stretch;
+            gap: 18px;
+        }
+
+        .backup-pane {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .backup-pane p {
+            margin-bottom: 14px;
+        }
+
+        .backup-option-row {
+            width: 100%;
+            min-height: 46px;
+            margin-top: 0;
+        }
+
+        .backup-divider {
+            width: 1px;
+            align-self: stretch;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .status {
+            min-height: 44px;
+            margin-top: 18px;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+        }
+
+        .status.success {
+            background: var(--success-bg);
+            border-color: var(--success-border);
+            color: var(--text-main);
+        }
+
+        .status.error {
+            background: var(--error-bg);
+            border-color: var(--error-border);
+            color: var(--text-main);
+        }
+
+        .credential-prompt-backdrop {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .credential-prompt-box {
+            width: min(420px, 100%);
+            padding: 18px;
+            border-radius: 12px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+        }
+
+        .credential-prompt-box h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+        }
+
+        .credential-prompt-box p {
+            margin: 0 0 12px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
+        .credential-prompt-error {
+            min-height: 18px;
+            margin-top: 8px;
+            color: #ff9d9d;
+            font-size: 0.8rem;
+        }
+
+        .credential-prompt-error:empty {
+            display: none;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+        }
+
+        body.settings-view-compact .page {
+            max-width: 760px;
+            padding: 20px 14px 30px;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body.settings-view-compact .hero {
+            margin-bottom: 12px;
+        }
+
+        body.settings-view-compact .hero h1 {
+            font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+            letter-spacing: 0.01em;
+        }
+
+        body.settings-view-compact .hero p,
+        body.settings-view-compact .panel p,
+        body.settings-view-compact .mode-card span,
+        body.settings-view-compact .field-card span,
+        body.settings-view-compact .explain-note,
+        body.settings-view-compact .note,
+        body.settings-view-compact .footer {
+            font-size: 0.78rem;
+            line-height: 1.32;
+        }
+
+        body.settings-view-compact .grid {
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        body.settings-view-compact .section-block {
+            margin-bottom: 10px;
+        }
+
+        body.settings-view-compact .panel {
+            padding: 12px 12px 10px;
+            border-radius: 10px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            backdrop-filter: none;
+        }
+
+        body.settings-view-compact .panel h2 {
+            margin-bottom: 7px;
+            padding-bottom: 5px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(123, 97, 255, 0.18);
+        }
+
+        body.settings-view-compact .summary {
+            gap: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+
+        body.settings-view-compact .metric {
+            padding: 8px 9px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        body.settings-view-compact .metric span {
+            margin-bottom: 3px;
+            font-size: 0.69rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        body.settings-view-compact .metric strong {
+            font-size: 0.88rem;
+        }
+
+        body.settings-view-compact .mode-grid,
+        body.settings-view-compact .security-grid {
+            gap: 6px;
+            margin-top: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        body.settings-view-compact .mode-card,
+        body.settings-view-compact .field-card,
+        body.settings-view-compact .toggle-row {
+            padding: 8px 9px;
+            border-radius: 8px;
+        }
+
+        body.settings-view-compact .button-row {
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        body.settings-view-compact button,
+        body.settings-view-compact .file-input,
+        body.settings-view-compact .text-input,
+        body.settings-view-compact .select-input {
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+        }
+
+        body.settings-view-compact .status {
+            min-height: 40px;
+            margin-top: 14px;
+            padding: 10px 12px;
+        }
+
+        body.settings-view-compact .settings-view-select {
+            max-width: 220px;
+        }
+
+        body.settings-view-compact .backup-split {
+            gap: 12px;
+        }
+
+        body.settings-view-properties {
+            background:
+                linear-gradient(180deg, rgba(23, 19, 58, 0.98), rgba(18, 14, 42, 0.98)),
+                var(--page-bg);
+        }
+
+        body.settings-view-properties .page {
+            max-width: 760px;
+            padding: 18px 14px 30px;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body.settings-view-properties .hero {
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(123, 97, 255, 0.2);
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(123, 97, 255, 0.14), rgba(255, 255, 255, 0.02));
+        }
+
+        body.settings-view-properties .hero h1 {
+            font-size: clamp(1.18rem, 2.1vw, 1.5rem);
+            margin-bottom: 6px;
+        }
+
+        body.settings-view-properties .hero p {
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        body.settings-view-properties .grid {
+            display: block;
+            margin-bottom: 0;
+        }
+
+        body.settings-view-properties .grid > .panel + .panel {
+            margin-top: 14px;
+        }
+
+        body.settings-view-properties .section-block {
+            margin-bottom: 14px;
+        }
+
+        body.settings-view-properties .panel {
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            background: transparent;
+            backdrop-filter: none;
+        }
+
+        body.settings-view-properties .panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 12px;
+            padding: 0;
+            border: none;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        body.settings-view-properties .panel h2::after {
+            display: none;
+        }
+
+        body.settings-view-properties .section-toggle {
+            width: 100%;
+            justify-content: flex-start;
+            font-size: inherit;
+        }
+
+        body.settings-view-properties .section-toggle::after {
+            content: '';
+            display: block;
+            flex: 1;
+            order: 2;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(123, 97, 255, 0.38), rgba(123, 97, 255, 0.08));
+        }
+
+        body.settings-view-properties .section-toggle-label {
+            order: 1;
+        }
+
+        body.settings-view-properties .section-toggle-icon {
+            order: 3;
+            width: 20px;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(123, 97, 255, 0.22);
+            font-size: 0.8rem;
+        }
+
+        body.settings-view-properties .panel p,
+        body.settings-view-properties .mode-card span,
+        body.settings-view-properties .field-card span,
+        body.settings-view-properties .explain-note,
+        body.settings-view-properties .note,
+        body.settings-view-properties .footer {
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        body.settings-view-properties .panel p {
+            margin: 0 0 10px;
+            color: var(--text-muted);
+        }
+
+        body.settings-view-properties .settings-view-row {
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.settings-view-properties .settings-view-label {
+            min-width: 96px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        body.settings-view-properties .settings-view-select {
+            max-width: 220px;
+        }
+
+        body.settings-view-properties .summary,
+        body.settings-view-properties .stats-summary {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        body.settings-view-properties .metric {
+            display: grid;
+            grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        body.settings-view-properties .metric-wide {
+            grid-column: auto;
+        }
+
+        body.settings-view-properties .metric span {
+            margin: 0;
+            color: #d7d7ea;
+            font-size: 0.78rem;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        body.settings-view-properties .metric strong {
+            display: flex;
+            align-items: center;
+            min-height: 30px;
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid rgba(123, 97, 255, 0.22);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
+            font-size: 0.83rem;
+            font-weight: 600;
+        }
+
+        body.settings-view-properties .metric-time {
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        body.settings-view-properties .backup-split {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        body.settings-view-properties .backup-pane {
+            padding: 0;
+        }
+
+        body.settings-view-properties .backup-option-row {
+            min-height: 30px;
+            margin-top: 0;
+        }
+
+        body.settings-view-properties .backup-divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(123, 97, 255, 0.16);
+        }
+
+        body.settings-view-properties .mode-grid,
+        body.settings-view-properties .security-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        body.settings-view-properties .mode-card,
+        body.settings-view-properties .field-card {
+            display: grid;
+            grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        body.settings-view-properties .mode-card input {
+            margin: 0;
+        }
+
+        body.settings-view-properties .mode-card strong,
+        body.settings-view-properties .field-card span {
+            margin: 0;
+            color: #d7d7ea;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        body.settings-view-properties .mode-card span {
+            grid-column: 2;
+            margin-top: 2px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        body.settings-view-properties .mode-card strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        body.settings-view-properties .mode-card input + strong {
+            display: inline;
+        }
+
+        body.settings-view-properties .field-card span {
+            align-self: center;
+        }
+
+        body.settings-view-properties .toggle-row {
+            display: grid;
+            grid-template-columns: 18px minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        body.settings-view-properties .toggle-row label {
+            font-weight: 600;
+            font-size: 0.78rem;
+        }
+
+        body.settings-view-properties button,
+        body.settings-view-properties .file-input,
+        body.settings-view-properties .text-input,
+        body.settings-view-properties .select-input {
+            min-height: 30px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+        }
+
+        body.settings-view-properties .file-input,
+        body.settings-view-properties .text-input,
+        body.settings-view-properties .select-input {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(123, 97, 255, 0.22);
+            color-scheme: dark;
+        }
+
+        body.settings-view-properties .select-input option,
+        body.settings-view-properties .select-input optgroup {
+            color: var(--text-main);
+            background: #211c47;
+        }
+
+        body.settings-view-properties .button-row {
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        body.settings-view-properties .button-row button {
+            min-width: 148px;
+        }
+
+        body.settings-view-properties .status {
+            min-height: 38px;
+            margin-top: 14px;
+            padding: 10px 12px;
+            border-radius: 4px;
+        }
+
+        body.settings-view-properties .credential-prompt-box {
+            border-radius: 6px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+        }
+
+        body.settings-view-properties .footer {
+            margin-top: 14px;
+        }
+
+        @media (max-width: 720px) {
+            .backup-split {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .backup-divider {
+                width: 100%;
+                height: 1px;
+            }
+        }
+    </style>
+</head>
+<body class="settings-view-compact">
+    <main class="page">
+        <section class="hero">
+            <h1>Chimera Folders 4.0</h1>
+            <p>Choose how the folder panel appears on Stremio Web, control fullscreen auto hide, and manage your full backups from one place.</p>
+        </section>
+
+        <section class="panel settings-view-panel" data-section-id="settings-views">
+            <h2>
+                <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-settings-views">
+                    <span class="section-toggle-label">Settings Views</span>
+                    <span class="section-toggle-icon" aria-hidden="true">-</span>
+                </button>
+            </h2>
+            <div id="section-body-settings-views" class="section-body">
+                <div class="settings-view-row">
+                    <label class="settings-view-label" for="settings-view-mode">View style</label>
+                    <select id="settings-view-mode" class="select-input settings-view-select">
+                        <option value="default">Default</option>
+                        <option value="property-sheet">Properties</option>
+                    </select>
+                </div>
+                <div class="note">Default keeps the compact 4.0 layout.<br>Properties shifts the page into a Windows properties style.</div>
+            </div>
+        </section>
+
+        <section class="grid section-block">
+            <article class="panel" data-section-id="current-data">
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-current-data">
+                        <span class="section-toggle-label">Current Data</span>
+                        <span class="section-toggle-icon" aria-hidden="true">-</span>
+                    </button>
+                </h2>
+                <div id="section-body-current-data" class="section-body">
+                    <div class="summary">
+                        <div class="metric">
+                            <span>Folders</span>
+                            <strong id="folder-count">0</strong>
+                        </div>
+                        <div class="metric">
+                            <span>Saved Links</span>
+                            <strong id="item-count">0</strong>
+                        </div>
+                        <div class="metric">
+                            <span>View Mode</span>
+                            <strong id="layout-mode-label">Sidebar Left</strong>
+                        </div>
+                        <div class="metric">
+                            <span>Auto Hide</span>
+                            <strong id="autohide-state">On</strong>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel" data-section-id="statistics">
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-statistics">
+                        <span class="section-toggle-label">Statistics</span>
+                        <span class="section-toggle-icon" aria-hidden="true">-</span>
+                    </button>
+                </h2>
+                <div id="section-body-statistics" class="section-body">
+                    <div class="summary stats-summary">
+                        <div class="metric">
+                            <span>Shows Watched</span>
+                            <strong id="shows-watched">0</strong>
+                        </div>
+                        <div class="metric">
+                            <span>Movies Watched</span>
+                            <strong id="movies-watched">0</strong>
+                        </div>
+                        <div class="metric metric-wide">
+                            <span>Total Time</span>
+                            <strong id="total-watch-time" class="metric-time">0 Seconds</strong>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="panel section-block" data-section-id="export-import">
+            <h2>
+                <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-export-import">
+                    <span class="section-toggle-label">Export/Import</span>
+                    <span class="section-toggle-icon" aria-hidden="true">-</span>
+                </button>
+            </h2>
+            <div id="section-body-export-import" class="section-body">
+                <div class="backup-split">
+                    <div class="backup-pane">
+                        <p>Download a full backup file with folders, saved links, and current settings.</p>
+                        <div class="toggle-row backup-option-row">
+                            <input id="export-remove-locks" type="checkbox">
+                            <label for="export-remove-locks">Remove Locks</label>
+                        </div>
+                        <div class="button-row">
+                            <button id="export-button" type="button">Export Everything</button>
+                        </div>
+                        <div class="note">If unchecked and locked folders are present, those locked folders are skipped from the backup. If checked, enter the master PIN or password first and the backup exports them without locks.</div>
+                    </div>
+                    <div class="backup-divider" aria-hidden="true"></div>
+                    <div class="backup-pane">
+                        <p>Importing replaces your current folders, links, and settings with the contents of the selected backup file.</p>
+                        <input id="import-file" class="file-input" type="file" accept=".json,application/json">
+                        <div class="button-row">
+                            <button id="import-button" type="button">Import Everything</button>
+                        </div>
+                        <div class="note">Open Stremio Web after import if you want to confirm the restored folders immediately.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" data-section-id="folder-views">
+            <h2>
+                <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-folder-views">
+                    <span class="section-toggle-label">Folder Views</span>
+                    <span class="section-toggle-icon" aria-hidden="true">-</span>
+                </button>
+            </h2>
+            <div id="section-body-folder-views" class="section-body">
+                <p>Choose where Chimera Folders appears and how it should look inside Stremio Web.</p>
+                <div class="mode-grid">
+                    <label class="mode-card">
+                        <input type="radio" name="layout-mode" value="sidebar-left">
+                        <strong>Sidebar Left</strong>
+                        <span>Default view. Keeps the folder panel fixed on the left side.</span>
+                    </label>
+                    <label class="mode-card">
+                        <input type="radio" name="layout-mode" value="sidebar-right">
+                        <strong>Sidebar Right</strong>
+                        <span>Moves the folder panel to the right side while keeping the same workflow.</span>
+                    </label>
+                    <label class="mode-card">
+                        <input type="radio" name="layout-mode" value="folder-view">
+                        <strong>Folder View</strong>
+                        <span>Shows a draggable explorer-style window with the repo name, logo, and tree-style folder layout.</span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <input id="autohide-fullscreen" type="checkbox">
+                    <label for="autohide-fullscreen">Auto hide while fullscreen playback is active</label>
+                </div>
+                <div class="explain-note">&gt; Hides the active folder panel only while Stremio is in browser fullscreen. It returns when fullscreen ends or after a refresh.</div>
+
+                <div class="button-row">
+                    <button id="save-settings-button" type="button">Save View Settings</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel section-block" data-section-id="master-pin">
+            <h2>
+                <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section-body-master-pin">
+                    <span class="section-toggle-label">Master Pin</span>
+                    <span class="section-toggle-icon" aria-hidden="true">-</span>
+                </button>
+            </h2>
+            <div id="section-body-master-pin" class="section-body">
+                <p>Set the master override used for locked folders and control how master-based lock behavior works.</p>
+                <div class="summary">
+                    <div class="metric">
+                        <span>Master Type</span>
+                        <strong id="master-type-label">Not Set</strong>
+                    </div>
+                    <div class="metric">
+                        <span>Delete Override</span>
+                        <strong id="delete-override-label">Off</strong>
+                    </div>
+                </div>
+
+                <div class="security-grid">
+                    <label class="field-card">
+                        <span>Master Type</span>
+                        <select id="master-type-select" class="select-input">
+                            <option value="pin4">4 Digit PIN</option>
+                            <option value="pin6">6 Digit PIN</option>
+                            <option value="password">Password</option>
+                        </select>
+                    </label>
+                    <label class="field-card">
+                        <span id="current-master-label">Current PIN</span>
+                        <input id="current-master-secret" class="text-input" type="password" maxlength="32" autocomplete="off">
+                    </label>
+                    <label class="field-card">
+                        <span id="new-master-label">New PIN</span>
+                        <input id="new-master-secret" class="text-input" type="password" maxlength="32" autocomplete="off">
+                    </label>
+                    <label class="field-card">
+                        <span id="confirm-master-label">Confirm PIN</span>
+                        <input id="confirm-master-secret" class="text-input" type="password" maxlength="32" autocomplete="off">
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <input id="allow-delete-locked" type="checkbox">
+                    <label for="allow-delete-locked">Allow deletion of locked folders without pin</label>
+                </div>
+                <div class="toggle-row">
+                    <input id="use-master-for-new-locks" type="checkbox">
+                    <label for="use-master-for-new-locks">Skip new lock and use master lock when making new locks</label>
+                </div>
+                <div class="toggle-row">
+                    <input id="bypass-show-popups" type="checkbox">
+                    <label for="bypass-show-popups">Bypass popup when deleting and adding shows</label>
+                </div>
+                <div class="explain-note">Locked folders can always be opened with their folder PIN or password, or the master lock. Master-based folder locks follow the current master PIN.</div>
+
+                <div class="button-row">
+                    <button id="save-master-button" type="button">Save Master Pin</button>
+                    <button id="remove-all-locks-button" class="secondary-button" type="button">Remove All Locks</button>
+                    <button id="clear-master-button" class="secondary-button" type="button">Remove Master Pin</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="status" class="status">Settings ready.</section>
+
+        <div class="footer">Version 4.0.0</div>
+    </main>
+
+    <script src="settings.js"></script>
+</body>
+</html>
