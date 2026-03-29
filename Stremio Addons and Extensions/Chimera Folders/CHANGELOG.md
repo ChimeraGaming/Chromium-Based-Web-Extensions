@@ -1,20 +1,32 @@
-# 📜 Changelog
+# Changelog
 
 All notable changes to this project are documented here.
 
 ---
 
-## 4.x.x — Settings and Expansion
+## 4.x.x - Settings and Expansion
 <details>
 <summary>View 4.x.x updates</summary>
 
-### 4.0.0 — Settings Import Export and Feature Expansion
+### 4.0.0 - Settings Import Export and Feature Expansion
 <details>
 <summary>View changes</summary>
 
-- Placeholder for upcoming settings system improvements
-- Planned support for importing and exporting user data and configuration
-- Foundation for additional feature expansion and future enhancements
+- Added a dedicated settings page that opens in a new tab from the sidebar
+- Added full export and import support for folders, saved links, settings, and lock data
+- Moved saved data into shared extension storage and added migration from the earlier localStorage format
+- Added Sidebar Left, Sidebar Right, and Folder View layout modes
+- Added a draggable explorer style folder window with repo branding and a launcher to reopen it after closing
+- Added full Edit mode with folder rename, saved title rename, folder reordering, and drag and drop moves between folders
+- Added sidebar search and remembered folder collapse state
+- Added fullscreen auto hide as a toggle in settings
+- Added refined sidebar controls with Home, GitHub, Discord, Settings, Pin, Add, Edit, and Close actions
+- Added a statistics panel in settings for shows watched, movies watched, and total watch time
+- Added folder locking with per folder codes or passwords
+- Added master override support with 4 digit code, 6 digit code, or password options
+- Added a master setting that can allow deletion of locked folders without entering the folder credential
+- Restored and fixed the extension icon in Folder View branding
+- Kept the Stremio matched color direction while expanding the interface and settings system
 
 </details>
 
@@ -22,11 +34,11 @@ All notable changes to this project are documented here.
 
 ---
 
-## 3.x.x — Open Source and Expansion
+## 3.x.x - Open Source and Expansion
 <details>
 <summary>View 3.x.x updates</summary>
 
-### 3.1.0 — Create Folder Fix
+### 3.1.0 - Create Folder Fix
 <details>
 <summary>View changes</summary>
 
@@ -37,7 +49,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 3.0.1 — Open Source Release
+### 3.0.1 - Open Source Release
 <details>
 <summary>View changes</summary>
 
@@ -49,7 +61,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 3.0.0 — Release Candidate 1
+### 3.0.0 - Release Candidate 1
 <details>
 <summary>View changes</summary>
 
@@ -64,11 +76,11 @@ All notable changes to this project are documented here.
 
 ---
 
-## 2.x.x — Dark Mode and Modern UI
+## 2.x.x - Dark Mode and Modern UI
 <details>
 <summary>View 2.x.x updates</summary>
 
-### 2.10.0 — Full UI Overhaul
+### 2.10.0 - Full UI Overhaul
 <details>
 <summary>View changes</summary>
 
@@ -82,7 +94,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 2.9.1 — Sidebar Button Polish and Minimize Fix
+### 2.9.1 - Sidebar Button Polish and Minimize Fix
 <details>
 <summary>View changes</summary>
 
@@ -93,7 +105,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 2.9.0 — Show Management and Confirmations
+### 2.9.0 - Show Management and Confirmations
 <details>
 <summary>View changes</summary>
 
@@ -106,7 +118,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 2.8.0 — Chrome Extension Ready
+### 2.8.0 - Chrome Extension Ready
 <details>
 <summary>View changes</summary>
 
@@ -189,7 +201,7 @@ All notable changes to this project are documented here.
 
 </details>
 
-### 2.0.0 — Dark Mode Transformation
+### 2.0.0 - Dark Mode Transformation
 <details>
 <summary>View changes</summary>
 
@@ -204,7 +216,7 @@ All notable changes to this project are documented here.
 
 ---
 
-## 1.x.x — Light Mode Era
+## 1.x.x - Light Mode Era
 <details>
 <summary>View 1.x.x updates</summary>
 
@@ -252,8 +264,8 @@ All notable changes to this project are documented here.
 
 ---
 
-# 📌 Notes
-- 4.x.x focuses on settings and feature expansion  
-- 3.x.x focuses on open source and structure  
-- 2.x.x focuses on UI and functionality  
-- 1.x.x is the foundation  
+# Notes
+- 4.x.x focuses on settings and feature expansion
+- 3.x.x focuses on open source and structure
+- 2.x.x focuses on UI and functionality
+- 1.x.x is the foundation
