@@ -6,7 +6,7 @@
 
 Organize your **Stremio Web** library with personal folders, a dark interface, fast navigation tools, and full backup and restore support.
 
-![Version](https://img.shields.io/badge/version-4.0.0-blueviolet)
+![Version](https://img.shields.io/badge/version-4.1.0-blueviolet)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Made With](https://img.shields.io/badge/made%20with-%E2%9D%A4-red)
 
@@ -111,7 +111,7 @@ Note: Firefox only supports temporary installation unless the extension is submi
 
 ## Upgrade Notes
 
-- Version 4.0.0 migrates existing folder data into extension storage the next time you open `web.stremio.com`
+- Version 4.1.0 migrates existing folder data into extension storage the next time you open `web.stremio.com`
 - After migrating once, use the new sidebar settings button to create or restore backups
 - Edit mode now handles folder reordering, cross-folder title moves, and saved title renaming
 - View settings now control layout mode and fullscreen auto hide behavior

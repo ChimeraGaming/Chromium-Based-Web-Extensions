@@ -1,6 +1,6 @@
 /**
  * Stremio Addon - Chimera Folders
- * Version: 4.0.0
+ * Version: 4.1.0
  * Description: Enhances Stremio Web with customizable folders, edit tools, shared extension storage, and backup tools.
  * Author: Chimera Gaming
  * GitHub: https://github.com/ChimeraGaming/Stremio-Addons
@@ -21,7 +21,7 @@
     }
     window.__chimeraFoldersLoaded = true;
 
-    const APP_VERSION = '4.0.0';
+    const APP_VERSION = '4.1.0';
     const LEGACY_STORAGE_KEY = 'streamio_folders';
     const STORAGE_KEY = 'chimera_folders_state';
     const DRAG_MIME = 'application/x-chimera-folders-drag';
@@ -73,9 +73,39 @@
         offsetX: 0,
         offsetY: 0
     };
+    let launcherDragState = {
+        active: false,
+        pointerId: null,
+        offsetX: 0,
+        offsetY: 0,
+        moved: false,
+        suppressClick: false
+    };
     let windowPosition = {
         left: 88,
         top: 96
+    };
+    let launcherPositions = {
+        'sidebar-left': {
+            left: 58,
+            top: 84,
+            custom: false
+        },
+        'sidebar-right': {
+            left: null,
+            top: 84,
+            custom: false
+        },
+        'folder-view': {
+            left: 20,
+            top: 20,
+            custom: false
+        },
+        'compact-folder-view': {
+            left: 20,
+            top: 20,
+            custom: false
+        }
     };
     const trackedVideos = new WeakSet();
 
@@ -283,7 +313,7 @@
             ...DEFAULT_SETTINGS,
             ...source,
             sidebarMinimized: getSafeBoolean(source.sidebarMinimized, false),
-            layoutMode: ['sidebar-left', 'sidebar-right', 'folder-view'].includes(layoutMode)
+            layoutMode: ['sidebar-left', 'sidebar-right', 'folder-view', 'compact-folder-view'].includes(layoutMode)
                 ? layoutMode
                 : DEFAULT_SETTINGS.layoutMode,
             settingsViewMode: normalizedSettingsViewMode,
@@ -2047,13 +2077,19 @@
                     linear-gradient(180deg, rgba(123, 97, 255, 0.22), rgba(0, 64, 255, 0.18)),
                     rgba(28, 28, 28, 0.94);
                 color: #fff;
-                cursor: pointer;
+                cursor: grab;
                 box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+                user-select: none;
+                touch-action: none;
                 z-index: 10001;
             }
 
             #folder-launcher.visible {
                 display: inline-flex;
+            }
+
+            #folder-launcher.dragging {
+                cursor: grabbing;
             }
 
             #folder-launcher img {
@@ -2075,6 +2111,8 @@
 
             .folder-row {
                 margin-bottom: 10px;
+                --folder-count-offset: 0px;
+                --folder-count-outset: 0px;
             }
 
             .folder-row.dragging,
@@ -2112,6 +2150,10 @@
                 gap: 8px;
                 min-width: 0;
                 flex: 1;
+                width: 100%;
+                position: relative;
+                box-sizing: border-box;
+                padding-right: 0;
             }
 
             .folder-title {
@@ -2128,27 +2170,36 @@
             }
 
             .folder-count {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
                 min-width: 24px;
-                padding: 2px 7px;
+                padding: 2px 0;
                 border-radius: 999px;
                 background: rgba(123, 97, 255, 0.28);
                 color: #fff;
                 font-size: 12px;
                 text-align: center;
+                font-variant-numeric: tabular-nums;
+                line-height: 1;
+                position: absolute;
+                right: calc(var(--folder-count-offset) - var(--folder-count-outset));
+                top: 50%;
+                transform: translateY(-50%);
             }
 
             .chevron {
                 cursor: pointer;
-                transition: transform 0.3s ease;
                 color: #fff;
                 font-weight: bold;
-                width: 10px;
+                width: 12px;
                 text-align: center;
                 user-select: none;
             }
 
             .chevron.collapsed {
-                transform: rotate(-90deg);
+                transform: none;
             }
 
             .folder-actions,
@@ -2204,9 +2255,29 @@
 
             .child-folder-list {
                 list-style: none;
-                margin: 4px 0 0 0;
-                padding: 0 0 0 14px;
+                margin: 1px 0 0 0;
+                padding: 0 0 0 12px;
                 border-left: 1px solid rgba(123, 97, 255, 0.16);
+            }
+
+            .child-folder-list .folder-row {
+                margin-bottom: 4px;
+            }
+
+            .child-folder-list .folder-row:last-child {
+                margin-bottom: 0;
+            }
+
+            .child-folder-list .folder-header {
+                padding-top: 5px;
+                padding-bottom: 5px;
+                gap: 6px;
+            }
+
+            .child-folder-list .folder-items {
+                margin-top: 1px;
+                padding-top: 2px;
+                padding-bottom: 1px;
             }
 
             .folder-row.profile-row > .folder-header {
@@ -2214,33 +2285,50 @@
             }
 
             .folder-depth-1 {
+                --folder-count-offset: -12px;
                 margin-left: 2px;
             }
 
             .folder-depth-2,
             .folder-depth-3 {
+                --folder-count-offset: -24px;
                 margin-left: 4px;
             }
 
             #folder-sidebar.layout-folder-view .folder-row {
-                padding: 10px;
-                border-radius: 14px;
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid rgba(123, 97, 255, 0.08);
+                padding: 6px 0 8px;
+                border-radius: 0;
+                background: transparent;
+                border: none;
+                overflow: visible;
+                --folder-count-outset: 8px;
             }
 
             #folder-sidebar.layout-folder-view .folder-header {
-                background:
-                    linear-gradient(180deg, rgba(123, 97, 255, 0.15), rgba(255, 255, 255, 0.02)),
-                    rgba(255, 255, 255, 0.02);
-                border: 1px solid rgba(123, 97, 255, 0.12);
-                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(123, 97, 255, 0.22);
+                border-radius: 4px;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
             }
 
             #folder-sidebar.layout-folder-view .folder-items {
                 margin-left: 14px;
-                border-left: 1px solid rgba(123, 97, 255, 0.22);
-                padding-left: 10px;
+                border-left: 1px solid rgba(123, 97, 255, 0.16);
+                padding: 3px 0 0 10px;
+                border-radius: 0;
+                background: transparent;
+            }
+
+            #folder-sidebar.layout-folder-view .child-folder-list {
+                border-left-color: rgba(123, 97, 255, 0.14);
+            }
+
+            #folder-sidebar.layout-folder-view .folder-count {
+                min-height: 16px;
+                padding: 1px 6px;
+                border-radius: 4px;
+                border: 1px solid rgba(123, 97, 255, 0.18);
+                background: rgba(123, 97, 255, 0.18);
             }
 
             .folder-item {
@@ -2256,8 +2344,9 @@
 
             #folder-sidebar.layout-folder-view .folder-item {
                 position: relative;
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(123, 97, 255, 0.08);
+                background: rgba(255, 255, 255, 0.035);
+                border: 1px solid rgba(123, 97, 255, 0.16);
+                border-radius: 4px;
             }
 
             #folder-sidebar.layout-folder-view .folder-item::before {
@@ -2267,6 +2356,173 @@
                 left: -15px;
                 width: 13px;
                 border-top: 1px solid rgba(123, 97, 255, 0.22);
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact {
+                width: min(360px, calc(100vw - 32px));
+                height: min(68vh, 620px);
+                padding: 11px;
+                border-radius: 15px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #panel-titlebar {
+                gap: 10px;
+                margin: -11px -11px 10px;
+                padding: 10px 12px;
+                border-radius: 15px 15px 0 0;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #panel-logo {
+                width: 22px;
+                height: 22px;
+                border-radius: 6px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #panel-brand {
+                gap: 10px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #panel-brand-copy strong {
+                font-size: 12px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #panel-brand-copy span {
+                font-size: 9px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #window-close-button {
+                min-width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                font-size: 13px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #sidebar-top {
+                gap: 6px;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .sidebar-button-row {
+                gap: 6px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .fancy-btn {
+                min-height: 30px;
+                padding: 6px 9px;
+                border-radius: 7px;
+                font-size: 13px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .icon-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .icon-glyph {
+                font-size: 14px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #sidebar-content h3 {
+                margin: 0 0 8px;
+                font-size: 18px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #folder-search {
+                margin-bottom: 6px;
+                padding: 6px 7px;
+                font-size: 13px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #folder-controls {
+                margin-top: 8px;
+                gap: 6px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .create-folder-btn {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact #folder-list {
+                margin-top: 8px;
+                width: 100%;
+                zoom: 0.82;
+                transform-origin: top left;
+                box-sizing: border-box;
+                padding-right: 0;
+                overflow-x: hidden;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-row {
+                padding: 4px 0 5px;
+                border-radius: 0;
+                max-width: 100%;
+                box-sizing: border-box;
+                margin-right: 0;
+                overflow: hidden;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-header {
+                padding: 4px 6px;
+                gap: 4px;
+                border-radius: 4px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-title {
+                font-size: 12px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-count {
+                width: 22px;
+                min-width: 22px;
+                padding: 1px 0;
+                font-size: 10px;
+                min-height: 14px;
+                border-radius: 4px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-items {
+                margin-left: 7px;
+                padding-left: 6px;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-item {
+                padding: 3px 4px;
+                border-radius: 4px;
+                gap: 5px;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-item::before {
+                left: -7px;
+                width: 5px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .child-folder-list {
+                padding-left: 8px;
+                margin-top: 0;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-item-link {
+                font-size: 13px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-action,
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .item-action {
+                padding: 2px 5px;
+                font-size: 10px;
+            }
+
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .empty-state,
+            #folder-sidebar.layout-folder-view.layout-folder-view-compact .folder-drop-note {
+                font-size: 11px;
             }
 
             .item-left {
@@ -2610,8 +2866,12 @@
         return appState.settings.layoutMode;
     }
 
+    function isCompactFolderViewLayout() {
+        return getLayoutMode() === 'compact-folder-view';
+    }
+
     function isFolderViewLayout() {
-        return getLayoutMode() === 'folder-view';
+        return getLayoutMode() === 'folder-view' || isCompactFolderViewLayout();
     }
 
     function applyWindowPosition() {
@@ -2629,8 +2889,92 @@
             return;
         }
 
-        launcherButton.classList.remove('layout-sidebar-left', 'layout-sidebar-right', 'layout-folder-view');
+        launcherButton.classList.remove('layout-sidebar-left', 'layout-sidebar-right', 'layout-folder-view', 'layout-folder-view-compact');
+
+        if (isCompactFolderViewLayout()) {
+            launcherButton.classList.add('layout-folder-view', 'layout-folder-view-compact');
+            return;
+        }
+
         launcherButton.classList.add(`layout-${getLayoutMode()}`);
+    }
+
+    function getDefaultLauncherPosition(mode) {
+        if (mode === 'sidebar-right') {
+            const launcherWidth = launcherButton ? (launcherButton.offsetWidth || 178) : 178;
+            return {
+                left: Math.max(16, window.innerWidth - launcherWidth - 16),
+                top: 84
+            };
+        }
+
+        if (mode === 'folder-view' || mode === 'compact-folder-view') {
+            return {
+                left: 20,
+                top: 20
+            };
+        }
+
+        return {
+            left: 58,
+            top: 84
+        };
+    }
+
+    function applyLauncherPosition() {
+        if (!launcherButton) {
+            return;
+        }
+
+        const mode = getLayoutMode();
+        const defaultPosition = getDefaultLauncherPosition(mode);
+        const storedPosition = launcherPositions[mode] || {
+            left: defaultPosition.left,
+            top: defaultPosition.top,
+            custom: false
+        };
+        const baseLeft = storedPosition.custom && Number.isFinite(storedPosition.left)
+            ? storedPosition.left
+            : defaultPosition.left;
+        const baseTop = storedPosition.custom && Number.isFinite(storedPosition.top)
+            ? storedPosition.top
+            : defaultPosition.top;
+        const launcherWidth = launcherButton.offsetWidth || 178;
+        const launcherHeight = launcherButton.offsetHeight || 46;
+        const maxLeft = Math.max(16, window.innerWidth - launcherWidth - 16);
+        const maxTop = Math.max(16, window.innerHeight - launcherHeight - 16);
+        const clampedLeft = Math.max(16, Math.min(baseLeft, maxLeft));
+        const clampedTop = Math.max(16, Math.min(baseTop, maxTop));
+
+        if (storedPosition.custom) {
+            storedPosition.left = clampedLeft;
+            storedPosition.top = clampedTop;
+        }
+
+        launcherPositions[mode] = storedPosition;
+        launcherButton.style.left = `${clampedLeft}px`;
+        launcherButton.style.top = `${clampedTop}px`;
+        launcherButton.style.right = 'auto';
+    }
+
+    function setLauncherPosition(left, top) {
+        if (!launcherButton) {
+            return;
+        }
+
+        const mode = getLayoutMode();
+        const launcherWidth = launcherButton.offsetWidth || 178;
+        const launcherHeight = launcherButton.offsetHeight || 46;
+        const maxLeft = Math.max(16, window.innerWidth - launcherWidth - 16);
+        const maxTop = Math.max(16, window.innerHeight - launcherHeight - 16);
+
+        launcherPositions[mode] = {
+            left: Math.max(16, Math.min(left, maxLeft)),
+            top: Math.max(16, Math.min(top, maxTop)),
+            custom: true
+        };
+
+        applyLauncherPosition();
     }
 
     function applySidebarLayout() {
@@ -2638,8 +2982,13 @@
             return;
         }
 
-        sidebar.classList.remove('layout-sidebar-left', 'layout-sidebar-right', 'layout-folder-view');
-        sidebar.classList.add(`layout-${getLayoutMode()}`);
+        sidebar.classList.remove('layout-sidebar-left', 'layout-sidebar-right', 'layout-folder-view', 'layout-folder-view-compact');
+
+        if (isCompactFolderViewLayout()) {
+            sidebar.classList.add('layout-folder-view', 'layout-folder-view-compact');
+        } else {
+            sidebar.classList.add(`layout-${getLayoutMode()}`);
+        }
 
         if (isFolderViewLayout()) {
             applyWindowPosition();
@@ -2650,6 +2999,7 @@
         }
 
         applyLauncherMode();
+        applyLauncherPosition();
     }
 
     function setPanelClosed(closed) {
@@ -2716,6 +3066,66 @@
     function endWindowDrag() {
         panelDragState.active = false;
         panelDragState.pointerId = null;
+    }
+
+    function beginLauncherDrag(event) {
+        if (!launcherButton || !panelClosed) {
+            return;
+        }
+
+        launcherDragState.active = true;
+        launcherDragState.pointerId = event.pointerId;
+        launcherDragState.offsetX = event.clientX - launcherButton.getBoundingClientRect().left;
+        launcherDragState.offsetY = event.clientY - launcherButton.getBoundingClientRect().top;
+        launcherDragState.moved = false;
+        launcherButton.classList.add('dragging');
+        launcherButton.setPointerCapture(event.pointerId);
+    }
+
+    function moveLauncherDrag(event) {
+        if (!launcherDragState.active || !launcherButton) {
+            return;
+        }
+
+        const nextLeft = event.clientX - launcherDragState.offsetX;
+        const nextTop = event.clientY - launcherDragState.offsetY;
+
+        if (
+            !launcherDragState.moved &&
+            (
+                Math.abs(nextLeft - launcherButton.getBoundingClientRect().left) > 2 ||
+                Math.abs(nextTop - launcherButton.getBoundingClientRect().top) > 2
+            )
+        ) {
+            launcherDragState.moved = true;
+        }
+
+        setLauncherPosition(nextLeft, nextTop);
+    }
+
+    function endLauncherDrag() {
+        if (!launcherButton) {
+            return;
+        }
+
+        if (launcherDragState.active && launcherDragState.moved) {
+            launcherDragState.suppressClick = true;
+        }
+
+        if (
+            launcherDragState.pointerId !== null &&
+            launcherButton.hasPointerCapture &&
+            launcherButton.hasPointerCapture(launcherDragState.pointerId)
+        ) {
+            launcherButton.releasePointerCapture(launcherDragState.pointerId);
+        }
+
+        launcherDragState.active = false;
+        launcherDragState.pointerId = null;
+        launcherDragState.offsetX = 0;
+        launcherDragState.offsetY = 0;
+        launcherDragState.moved = false;
+        launcherButton.classList.remove('dragging');
     }
 
     /*
@@ -3331,7 +3741,7 @@
 
         const chevron = document.createElement('span');
         chevron.className = 'chevron';
-        chevron.textContent = '>';
+        chevron.textContent = folder.collapsed && !searchQuery ? '+' : '-';
         chevron.classList.toggle('collapsed', folder.collapsed && !searchQuery);
         chevron.addEventListener('click', (event) => {
             toggleFolderAccess(event).catch(() => {
@@ -3359,10 +3769,6 @@
                 showToast('Could not update folder state.');
             });
         });
-
-        const count = document.createElement('span');
-        count.className = 'folder-count';
-        count.textContent = String(getFolderItemCount(folder.id));
 
         if (isEditMode) {
             const actions = document.createElement('div');
@@ -3451,7 +3857,6 @@
 
         left.appendChild(chevron);
         left.appendChild(title);
-        left.appendChild(count);
         header.appendChild(left);
         row.appendChild(header);
 
@@ -3811,7 +4216,7 @@
 
             const chevron = document.createElement('span');
             chevron.className = 'chevron';
-            chevron.textContent = '>';
+            chevron.textContent = folder.collapsed && !searchQuery ? '+' : '-';
             chevron.classList.toggle('collapsed', folder.collapsed && !searchQuery);
             chevron.addEventListener('click', (event) => {
                 toggleFolderAccess(event).catch(() => {
@@ -3839,10 +4244,6 @@
                     showToast('Could not update folder state.');
                 });
             });
-
-            const count = document.createElement('span');
-            count.className = 'folder-count';
-            count.textContent = String(folder.items.length);
 
             if (isEditMode) {
                 const actions = document.createElement('div');
@@ -3921,7 +4322,6 @@
 
             left.appendChild(chevron);
             left.appendChild(title);
-            left.appendChild(count);
             header.appendChild(left);
             row.appendChild(header);
 
@@ -4882,7 +5282,29 @@
             setPanelClosed(true);
         });
 
-        launcherButton.addEventListener('click', () => {
+        launcherButton.addEventListener('pointerdown', (event) => {
+            beginLauncherDrag(event);
+        });
+
+        launcherButton.addEventListener('pointermove', (event) => {
+            moveLauncherDrag(event);
+        });
+
+        launcherButton.addEventListener('pointerup', () => {
+            endLauncherDrag();
+        });
+
+        launcherButton.addEventListener('pointercancel', () => {
+            endLauncherDrag();
+        });
+
+        launcherButton.addEventListener('click', (event) => {
+            if (launcherDragState.suppressClick) {
+                launcherDragState.suppressClick = false;
+                event.preventDefault();
+                return;
+            }
+
             setPanelClosed(false);
         });
 
@@ -4930,11 +5352,11 @@
         });
 
         window.addEventListener('resize', () => {
-            if (!isFolderViewLayout()) {
-                return;
-            }
+            applyLauncherPosition();
 
-            clampWindowPosition(windowPosition.left, windowPosition.top);
+            if (isFolderViewLayout()) {
+                clampWindowPosition(windowPosition.left, windowPosition.top);
+            }
         });
 
         if (storageAvailable() && chrome.storage.onChanged) {

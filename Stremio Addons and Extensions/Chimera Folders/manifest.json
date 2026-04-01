@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Stremio Addon - Chimera Folders",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Enhances Stremio Web with customizable folders, multiple folder view layouts, edit mode tools, fullscreen auto hide, shared backup tools, and a Stremio-matched UI.",
   "icons": {
     "128": "icon.png"

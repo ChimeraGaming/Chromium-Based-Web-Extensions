@@ -7,7 +7,7 @@
     ╚════════════════════════════════════════════════════════════╝
     */
 
-    const APP_VERSION = '4.0.0';
+    const APP_VERSION = '4.1.0';
     const STORAGE_KEY = 'chimera_folders_state';
     const SETTINGS_SECTION_IDS = [
         'settings-views',
@@ -256,7 +256,7 @@
             ...DEFAULT_SETTINGS,
             ...source,
             sidebarMinimized: getSafeBoolean(source.sidebarMinimized, false),
-            layoutMode: ['sidebar-left', 'sidebar-right', 'folder-view'].includes(layoutMode)
+            layoutMode: ['sidebar-left', 'sidebar-right', 'folder-view', 'compact-folder-view'].includes(layoutMode)
                 ? layoutMode
                 : DEFAULT_SETTINGS.layoutMode,
             settingsViewMode: normalizedSettingsViewMode,
@@ -376,6 +376,10 @@
     function getLayoutModeLabel(layoutMode) {
         if (layoutMode === 'sidebar-right') {
             return 'Sidebar Right';
+        }
+
+        if (layoutMode === 'compact-folder-view') {
+            return 'Compact Folder View';
         }
 
         if (layoutMode === 'folder-view') {
