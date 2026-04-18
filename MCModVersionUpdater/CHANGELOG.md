@@ -8,29 +8,10 @@ All notable changes to this project are documented here.
 <summary><strong>Version 2.x</strong></summary>
 
 <details open>
-<summary><strong>Version 2.0</strong></summary>
-
-### Added
-- New scan mode: `Attempt to update mod (Fabric only)`.
-- Main panel info bubbles for `Scan mode` and `Target Minecraft version`.
-- Filter-aware `Download All` action for direct matched links.
-- Source count indicator in the panel and settings.
-
-### Changed
-- Large UI cleanup across panel and settings.
-- Main panel is draggable and auto closes after successful scans.
-- Scan mode flow simplified into clearer mode names.
-- Main scan upload was condensed to one `Upload ZIP/Folder` button with ZIP and Folder picker.
-- Compare mode upload sections were cleaned up and organized side by side.
-- Theme behavior and settings layout were refined for consistency.
-- Additional Sources section now matches the stacked layout used in other settings sections.
+<summary><strong>Version 2.1</strong></summary>
 
 ### Fixed
-- Compare mode identity filtering now keeps valid rows instead of over-filtering.
-- Fabric update mode now resolves the minimum available Fabric Loader version correctly for the target game version.
-- Close button size and placement no longer cut into long panel titles.
-- Corrected `1.26` references to `26.1`.
-- Export output remains `.meta4` and respects active filters.
+- Scan failures caused by `Resource::kQuotaBytes quota exceeded` now fail safely, and Settings now points you to `Clear API cache` when that error appears.
 
 </details>
 

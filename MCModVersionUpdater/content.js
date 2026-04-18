@@ -81,6 +81,7 @@
     preferAdditionalSources: false,
     additionalSourceUrls: [],
     minecraftVersionDatabase: [
+      "26.1.1",
       "26.1",
       "1.21.11","1.21.10","1.21.9","1.21.8","1.21.7","1.21.6","1.21.5","1.21.4","1.21.3","1.21.2","1.21.1","1.21",
       "1.20.6","1.20.5","1.20.4","1.20.3","1.20.2","1.20.1","1.20",
@@ -510,15 +511,6 @@
           targetVersion: normalizeLegacyVersion(items.targetVersion),
           minecraftVersionDatabase: sanitizeMinecraftVersionDatabase(items.minecraftVersionDatabase)
         };
-        const changedTarget = normalized.targetVersion !== String(items.targetVersion || "");
-        const changedDb = JSON.stringify(normalized.minecraftVersionDatabase) !== JSON.stringify(items.minecraftVersionDatabase || DEFAULTS.minecraftVersionDatabase);
-        if (changedTarget || changedDb) {
-          chrome.storage.sync.set({
-            targetVersion: normalized.targetVersion,
-            minecraftVersionDatabase: normalized.minecraftVersionDatabase
-          }, () => resolve(normalized));
-          return;
-        }
         resolve(normalized);
       });
     });
@@ -1021,7 +1013,7 @@
     const lines = [
       '<?xml version="1.0" encoding="utf-8"?>',
       '<metalink xmlns="urn:ietf:params:xml:ns:metalink" version="4.0">',
-      "  <generator>Mod Update Checker v2.0</generator>",
+      "  <generator>Mod Update Checker v2.1</generator>",
       `  <published>${new Date().toISOString()}</published>`
     ];
     for (const entry of entries) {

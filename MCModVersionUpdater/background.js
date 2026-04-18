@@ -12,6 +12,7 @@ const DEFAULT_OPTIONS = {
   preferAdditionalSources: false,
   additionalSourceUrls: [],
   minecraftVersionDatabase: [
+    "26.1.1",
     "26.1",
     "1.21.11","1.21.10","1.21.9","1.21.8","1.21.7","1.21.6","1.21.5","1.21.4","1.21.3","1.21.2","1.21.1","1.21",
     "1.20.6","1.20.5","1.20.4","1.20.3","1.20.2","1.20.1","1.20",
@@ -31,6 +32,7 @@ const DEFAULT_OPTIONS = {
 
 async function getLocalStorage(keys) { return await chrome.storage.local.get(keys); }
 async function setLocalStorage(payload) { return await chrome.storage.local.set(payload); }
+async function removeLocalStorage(keys) { return await chrome.storage.local.remove(keys); }
 
 function normalizeLegacyVersion(version) {
   const clean = String(version || "").trim();
@@ -289,7 +291,29 @@ async function cachedFetchJson(url, cacheKey, headers = {}) {
   const response = await fetch(url, { headers });
   if (!response.ok) throw new Error(`Request failed with ${response.status}`);
   const data = await response.json();
-  await setLocalStorage({ [key]: { ts: now, data } });
+  try {
+    await setLocalStorage({ [key]: { ts: now, data } });
+  } catch {
+    try {
+      const storageItems = await getLocalStorage(null);
+      const cacheEntries = Object.entries(storageItems || {})
+        .filter(([entryKey]) => String(entryKey || "").startsWith("cache_"))
+        .map(([entryKey, entryValue]) => ({
+          key: entryKey,
+          ts: Number(entryValue?.ts || 0)
+        }))
+        .sort((a, b) => a.ts - b.ts);
+
+      const keysToRemove = cacheEntries.slice(0, Math.max(10, Math.ceil(cacheEntries.length / 4))).map((entry) => entry.key);
+      if (keysToRemove.length) {
+        await removeLocalStorage(keysToRemove);
+      }
+
+      await setLocalStorage({ [key]: { ts: now, data } });
+    } catch {
+      // Cache is best effort only. If storage is full, continue without writing.
+    }
+  }
   return data;
 }
 
