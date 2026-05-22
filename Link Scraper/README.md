@@ -1,3 +1,6 @@
+
+New Update coming soon - Pokeharbor mode (will also redo the readme a bit)
+
 # Link Scraper
 
 Link Scraper is a Chromium-based extension that opens a floating panel on the current page and collects visible `http` and `https` links.
