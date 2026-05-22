@@ -1,13 +1,32 @@
 {
   "manifest_version": 3,
   "name": "Link Scraper",
-  "version": "3.0",
-  "description": "Scrapes links, Filtering, and Save as Meta4 File. Ready to be inputted into most Download Managers.",
-  "permissions": ["activeTab", "scripting", "clipboardWrite"],
+  "version": "3.5",
+  "description": "Scrapes links, filters results, saves Meta4 files, and supports clean PokeHarbor ROM hack scraping.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://www.pokeharbor.com/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Link Scraper"
+    "default_title": "Link Scraper",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
